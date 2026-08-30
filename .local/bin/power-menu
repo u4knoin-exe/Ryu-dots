@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+THEME="$HOME/.config/rofi/power.rasi"
+
+choice=$(printf '%s\n' \
+    "󰌾   Lock" \
+    "󰤄   Suspend" \
+    "󰜉   Reboot" \
+    "󰐥   Shutdown" \
+    "󰍃   Logout" |
+    rofi -dmenu \
+        -i \
+        -no-custom \
+        -p "󰌾  POWER" \
+        -theme "$THEME")
+
+case "$choice" in
+    *Lock)
+        hyprlock
+        ;;
+    *Suspend)
+        systemctl suspend
+        ;;
+    *Reboot)
+        systemctl reboot
+        ;;
+    *Shutdown)
+        systemctl poweroff
+        ;;
+    *Logout)
+        hyprctl dispatch exit
+        ;;
+esac

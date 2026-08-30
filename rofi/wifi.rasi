@@ -1,0 +1,70 @@
+configuration {
+    font: "Iosevka Nerd Font 12";
+    show-icons: false;
+    markup: true;
+}
+
+* {
+    background-color: transparent;
+    text-color: #eeeeee;
+}
+
+window {
+    width: 650px;
+    background-color: rgba(10, 10, 13, 0.96);
+    border: 1px;
+    border-color: rgba(255, 255, 255, 0.14);
+    border-radius: 24px;
+    padding: 24px;
+}
+
+mainbox {
+    background-color: transparent;
+    children: [ inputbar, listview ];
+    spacing: 14px;
+}
+
+inputbar {
+    background-color: rgba(255, 255, 255, 0.055);
+    border: 1px;
+    border-color: rgba(255, 255, 255, 0.09);
+    border-radius: 15px;
+    padding: 13px 16px;
+    children: [ prompt, entry ];
+}
+
+prompt {
+    background-color: transparent;
+    text-color: rgba(139, 233, 253, 0.9);
+}
+
+entry {
+    background-color: transparent;
+    text-color: #ffffff;
+    placeholder: "Search networks...";
+    placeholder-color: rgba(255, 255, 255, 0.3);
+}
+
+listview {
+    background-color: transparent;
+    lines: 8;
+    spacing: 5px;
+    scrollbar: false;
+}
+
+element {
+    background-color: transparent;
+    border-radius: 13px;
+    padding: 12px 15px;
+}
+
+element selected {
+    background-color: rgba(255, 255, 255, 0.09);
+    border: 1px;
+    border-color: rgba(139, 233, 253, 0.16);
+}
+
+element-text {
+    background-color: transparent;
+    text-color: #e8e8e8;
+}

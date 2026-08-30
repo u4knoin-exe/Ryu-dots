@@ -1,0 +1,120 @@
+* {
+    font-family: "JetBrainsMono Nerd Font";
+    font-size: 13px;
+    border: none;
+    min-height: 0;
+}
+
+window#waybar {
+    background: rgba(10, 10, 14, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 14px;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+#workspaces {
+    margin: 4px 8px;
+}
+
+#workspaces button {
+    padding: 0 7px;
+    margin: 0 2px;
+    border-radius: 9px;
+    color: rgba(255, 255, 255, 0.35);
+    background: transparent;
+}
+
+#workspaces button.active {
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+#workspaces button:hover {
+    color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#clock {
+    padding: 0 14px;
+    font-weight: 600;
+}
+
+#pulseaudio,
+#network,
+#battery {
+    padding: 0 9px;
+    margin: 4px 1px;
+    border-radius: 9px;
+}
+
+#pulseaudio:hover,
+#network:hover,
+#battery:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+tooltip {
+    background: rgba(10, 10, 14, 0.94);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+}
+
+tooltip label {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+#custom-cava { background: transparent; border: none; box-shadow: none; padding: 0; margin: 0; border-radius: 0; }
+#custom-music {
+    padding: 0 12px;
+    margin: 4px 2px;
+    border-radius: 9px;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+#custom-music:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.95);
+}
+
+#custom-nixos {
+    padding: 0 10px;
+    margin: 4px 2px;
+    border-radius: 9px;
+    font-size: 17px;
+}
+
+#custom-nixos:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+#custom-cava {
+    padding: 0 8px;
+    margin: 4px 2px;
+    border-radius: 9px;
+    color: rgba(139, 233, 253, 0.75);
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+#custom-cava:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(139, 233, 253, 1);
+}
+
+#custom-cava {
+    padding: 0 4px;
+    margin: 4px 0;
+    border-radius: 7px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 10px;
+    letter-spacing: 0;
+}
+
+#custom-cava:hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(255, 255, 255, 0.75);
+}
+# Cava polish
+#custom-cava { font-size: 16px; font-weight: 600; letter-spacing: -1px; color: rgba(255,255,255,0.90); background: transparent; border: none; box-shadow: none; padding: 0; margin: 0; }
+# Cava polish
+#custom-cava { font-size: 16px; font-weight: 600; letter-spacing: -1px; color: rgba(255,255,255,0.90); background: transparent; border: none; box-shadow: none; padding: 0; margin: 0; }

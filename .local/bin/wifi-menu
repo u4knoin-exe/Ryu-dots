@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+THEME="$HOME/.config/rofi/wifi.rasi"
+
+signal_icon() {
+    local s="$1"
+
+    if (( s >= 80 )); then
+        echo "󰤨"
+    elif (( s >= 60 )); then
+        echo "󰤥"
+    elif (( s >= 40 )); then
+        echo "󰤢"
+    elif (( s >= 20 )); then
+        echo "󰤟"
+    else
+        echo "󰤯"
+    fi
+}
+
+get_networks() {
+    nmcli -t -f IN-USE,SSID,SIGNAL,SECURITY device wifi list |
+    awk -F: '$2 != "" {
+        printf "%s\t%s\t%s\t%s\n", $1, $2, $3, $4
+    }' |
+    sort -t$'\t' -k3nr
+}
+
+while true; do
+
+    menu=""
+
+    networks=$(get_networks)
+
+    connected=""
+
+    while IFS=$'\t' read -r active ssid signal security; do
+        [ -z "$ssid" ] && continue
+
+        icon=$(signal_icon "$signal")
+
+        if [ "$security" = "--" ]; then
+            lock="󰍁"
+        else
+            lock="󰌾"
+        fi
+
+        if [ "$active" = "*" ]; then
+            connected="$ssid"
+
+            menu+="󰄬  <b>$ssid</b>    <span foreground='#8be9fd'>CONNECTED</span>"$'\n'
+            menu+=$'\n'
+        fi
+    done <<< "$networks"
+
+    menu+="󰑐  Refresh networks"$'\n'
+    menu+=$'\n'
+
+    while IFS=$'\t' read -r active ssid signal security; do
+        [ -z "$ssid" ] && continue
+        [ "$active" = "*" ] && continue
+
+        icon=$(signal_icon "$signal")
+
+        if [ "$security" = "--" ]; then
+            lock="󰍁"
+        else
+            lock="󰌾"
+        fi
+
+        menu+="$icon  $ssid    <span foreground='#888888'>$signal%</span>  $lock"$'\n'
+    done <<< "$networks"
+
+    choice=$(
+        printf '%s' "$menu" |
+        rofi -dmenu \
+            -i \
+            -markup-rows \
+            -theme "$THEME" \
+            -p "󰖩"
+    )
+
+    [ -z "$choice" ] && exit 0
+
+    if [[ "$choice" == *"Refresh networks"* ]]; then
+        nmcli device wifi rescan >/dev/null 2>&1 || true
+        sleep 1
+        continue
+    fi
+
+    if [[ "$choice" == *"CONNECTED"* ]]; then
+        continue
+    fi
+
+    # Remove icon and trailing signal/security information.
+    ssid=$(printf '%s\n' "$choice" |
+        sed -E 's/^[^ ]+[[:space:]]+//; s/[[:space:]]+<span.*$//; s/[[:space:]]+[0-9]+%[[:space:]]+.*$//')
+
+    [ -z "$ssid" ] && continue
+
+    nmcli device wifi connect "$ssid"
+
+done

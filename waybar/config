@@ -1,0 +1,73 @@
+{
+    "layer": "top",
+    "position": "top",
+    "passthrough": false,
+    "height": 34,
+    "margin-top": 8,
+    "margin-left": 400,
+    "margin-right": 400,
+
+    "modules-left": ["custom/nixos", "hyprland/workspaces"],
+    "modules-center": ["clock", "custom/music", "custom/cava"],
+    "modules-right": ["pulseaudio", "network", "battery"],
+
+    "custom/nixos": {
+        "format": "",
+        "tooltip": "NixOS"
+    },
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "all-outputs": false,
+        "show-special": false,
+        "persistent-workspaces": {
+            "*": 9
+        },
+        "format-icons": {
+            "active": "●",
+            "default": "○"
+        }
+    },
+
+    "clock": {
+        "format": "{:%H:%M}"
+    },
+
+    "custom/music": {
+        "format": "󰎈 {}",
+        "exec": "playerctl -p spotify metadata --format '{{ artist }} — {{ title }}' 2>/dev/null",
+        "interval": 2,
+        "max-length": 35,
+        "on-click": "playerctl -p spotify play-pause",
+        "on-scroll-up": "playerctl -p spotify next",
+        "on-scroll-down": "playerctl -p spotify previous",
+        "tooltip": true,
+        "tooltip-format": "Click: Play/Pause • Scroll: Previous/Next"
+    },
+
+    "custom/cava": {
+        "format": "{}",
+        "exec": "~/.local/bin/cava-waybar",
+        "return-type": "json",
+        "restart-interval": 1,
+        "tooltip": false
+    },
+
+    "pulseaudio": {
+        "on-click": "~/.local/bin/volume-menu",
+        "format": "󰕾 {volume}%"
+    },
+
+    "network": {
+        "format-wifi": "󰖩",
+        "format-disconnected": "󰖪",
+        "format-ethernet": "󰈀",
+        "format-disabled": "󰖪",
+        "tooltip-format": "{ifname}: {ipaddr}",
+        "on-click": "~/.local/bin/wifi-menu"
+    },
+
+    "battery": {
+        "on-click": "~/.local/bin/battery-menu",
+        "format": "󰁹 {capacity}%"
+    }
+}
