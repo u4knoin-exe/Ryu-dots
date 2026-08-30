@@ -2,19 +2,30 @@
 set -e
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
-mkdir -p ~/.config ~/.local/bin
+echo "Installing dotfiles from: $DOTFILES"
+
+mkdir -p "$HOME/.config" "$HOME/.local/bin"
 
 for dir in hypr waybar kitty rofi cava fastfetch; do
-    rm -rf "$HOME/.config/$dir"
-    cp -r "$DOTFILES/$dir" "$HOME/.config/$dir"
+    if [ -e "$HOME/.config/$dir" ]; then
+        mkdir -p "$BACKUP"
+        mv "$HOME/.config/$dir" "$BACKUP/"
+    fi
+    cp -r "$DOTFILES/$dir" "$HOME/.config/"
 done
 
-cp -r "$DOTFILES/.local/bin/." "$HOME/.local/bin/"
+for file in "$DOTFILES/.local/bin/"*; do
+    cp "$file" "$HOME/.local/bin/"
+done
+
 cp "$DOTFILES/starship.toml" "$HOME/.config/starship.toml"
 cp "$DOTFILES/.bashrc" "$HOME/.bashrc"
 
-chmod +x ~/.local/bin/*
+chmod +x "$HOME/.local/bin/"*
 
-echo "Dotfiles installed."
+echo
+echo "Done."
+echo "Backup: $BACKUP"
 echo "Restart your shell or log out/in to apply everything."
