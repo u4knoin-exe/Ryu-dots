@@ -13,6 +13,20 @@ My personal Linux rice/configuration.
 - Starship
 - Custom scripts
 
+## Required packages
+
+- Hyprland
+- Waybar
+- Kitty
+- Rofi
+- Cava
+- Fastfetch
+- Starship
+- Playerctl
+- Brightnessctl
+- WirePlumber
+- NetworkManager
+
 ## Install
 
 ```bash
