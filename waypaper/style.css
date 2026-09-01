@@ -1,0 +1,7 @@
+* { color: #eeeeee; background-color: #0f0f12; }
+window { background: #0f0f12; }
+button { color: #eeeeee; background: #18181c; border: 1px solid #303038; border-radius: 10px; }
+button:hover, button:checked { color: #ffffff; background: #25252b; }
+entry, spinbutton, combobox, list, viewport { color: #eeeeee; background: #18181c; }
+menu, popover { color: #eeeeee; background: #18181c; }
+scrollbar { background: #0f0f12; }

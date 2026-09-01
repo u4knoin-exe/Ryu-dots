@@ -1,0 +1,46 @@
+[global]
+monitor = 0
+follow = none
+width = 340
+height = (80, 120)
+origin = top-right
+offset = (14, 48)
+notification_limit = 4
+font = JetBrainsMono Nerd Font 10
+frame_width = 1
+corner_radius = 14
+padding = 10
+horizontal_padding = 12
+text_icon_padding = 8
+separator_height = 1
+separator_color = frame
+format = "<b>%s</b>\n%b"
+markup = full
+word_wrap = yes
+ignore_newline = no
+transparency = 8
+show_indicators = no
+icon_position = left
+max_icon_size = 48
+idle_threshold = 120
+mouse_left_click = close_current
+mouse_middle_click = close_all
+mouse_right_click = close_current
+
+[urgency_low]
+timeout = 3
+background = "#0a0a0e"
+foreground = "#888890"
+frame_color = "#29292f"
+
+[urgency_normal]
+timeout = 10
+background = "#0a0a0e"
+foreground = "#e8e8ec"
+frame_color = "#3a3a42"
+
+[urgency_critical]
+timeout = 0
+background = "#0a0a0e"
+foreground = "#ffffff"
+frame_color = "#666670"

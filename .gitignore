@@ -1,2 +1,13 @@
-*.bak
-*.backup
+# Auto-generated / runtime state
+dconf/
+menus/
+mimeapps.list
+mozilla/
+net.imput.helium/
+pulse/
+spotify/
+
+# Cache / logs
+*.log
+.cache/
+gh/

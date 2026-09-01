@@ -6,13 +6,22 @@
     "margin-top": 8,
     "margin-left": 400,
     "margin-right": 400,
-
-    "modules-left": ["custom/nixos", "hyprland/workspaces"],
-    "modules-center": ["clock", "custom/music", "custom/cava"],
-    "modules-right": ["pulseaudio", "network", "battery"],
-
+    "modules-left": [
+        "custom/nixos",
+        "hyprland/workspaces"
+    ],
+    "modules-center": [
+        "clock",
+        "custom/music",
+        "custom/cava"
+    ],
+    "modules-right": [
+        "custom/volume",
+        "network",
+        "battery"
+    ],
     "custom/nixos": {
-        "format": "",
+        "format": "\uf313",
         "tooltip": "NixOS"
     },
     "hyprland/workspaces": {
@@ -23,51 +32,44 @@
             "*": 9
         },
         "format-icons": {
-            "active": "●",
-            "default": "○"
+            "active": "\u25cf",
+            "default": "\u25cb"
         }
     },
-
     "clock": {
         "format": "{:%H:%M}"
     },
-
     "custom/music": {
-        "format": "󰎈 {}",
-        "exec": "playerctl -p spotify metadata --format '{{ artist }} — {{ title }}' 2>/dev/null",
+        "format": "\udb80\udf88 {}",
+        "exec": "playerctl metadata --format '{{ artist }} \u2014 {{ title }}' 2>/dev/null",
         "interval": 2,
         "max-length": 35,
-        "on-click": "playerctl -p spotify play-pause",
-        "on-scroll-up": "playerctl -p spotify next",
-        "on-scroll-down": "playerctl -p spotify previous",
+        "on-click": "playerctl play-pause",
+        "on-scroll-up": "playerctl next",
+        "on-scroll-down": "playerctl previous",
         "tooltip": true,
-        "tooltip-format": "Click: Play/Pause • Scroll: Previous/Next"
+        "tooltip-format": "Click: Play/Pause \u2022 Scroll: Previous/Next"
     },
-
-    "custom/cava": {
-        "format": "{}",
-        "exec": "~/.local/bin/cava-waybar",
-        "return-type": "json",
-        "restart-interval": 1,
-        "tooltip": false
-    },
-
-    "pulseaudio": {
-        "on-click": "~/.local/bin/volume-menu",
-        "format": "󰕾 {volume}%"
-    },
-
     "network": {
-        "format-wifi": "󰖩",
-        "format-disconnected": "󰖪",
-        "format-ethernet": "󰈀",
-        "format-disabled": "󰖪",
+        "format-wifi": "\udb81\udda9",
+        "format-disconnected": "\udb81\uddaa",
+        "format-ethernet": "\udb80\ude00",
+        "format-disabled": "\udb81\uddaa",
         "tooltip-format": "{ifname}: {ipaddr}",
         "on-click": "~/.local/bin/wifi-menu"
     },
-
     "battery": {
         "on-click": "~/.local/bin/battery-menu",
-        "format": "󰁹 {capacity}%"
+        "format": "\udb80\udc79 {capacity}%"
+    },
+    "custom/volume": {
+        "format": "{}",
+        "exec": "wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{if ($3==\"[MUTED]\") print \"\udb81\udd81 MUTED\"; else printf \"\udb81\udd7e %d%%\\n\", $2*100}'",
+        "interval": 1,
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+        "tooltip": true,
+        "tooltip-format": "Left click: Mute \u2022 Scroll: Volume"
     }
 }
