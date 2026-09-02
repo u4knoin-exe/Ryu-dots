@@ -7,7 +7,7 @@
     "margin-left": 400,
     "margin-right": 400,
     "modules-left": [
-        "custom/nixos",
+        "custom/cachyos",
         "hyprland/workspaces"
     ],
     "modules-center": [
@@ -20,9 +20,9 @@
         "network",
         "battery"
     ],
-    "custom/nixos": {
+    "custom/cachyos": {
         "format": "\uf313",
-        "tooltip": "NixOS"
+        "tooltip": "CachyOS"
     },
     "hyprland/workspaces": {
         "format": "{icon}",
