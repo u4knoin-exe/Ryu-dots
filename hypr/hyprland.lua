@@ -37,7 +37,7 @@ hl.monitor({
 ---------------------
 
 -- Set programs that you use
-local terminal    = "kitty"
+local terminal    = "kitty --working-directory ~"
 local fileManager = "dolphin"
 local menu        = "hyprlauncher"
 
@@ -49,15 +49,9 @@ local menu        = "hyprlauncher"
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 
 -- Autostart necessary processes (like notifications daemons, status bars, etc.)
--- Or execute your favorite apps at launch like this:
---
--- hl.on("hyprland.start", function ()
---   hl.exec_cmd(terminal)
---   hl.exec_cmd("nm-applet")
-hl.exec_cmd("waybar")
-hl.exec_cmd("dunst")
--- end)
 hl.on("hyprland.start", function()
+    hl.exec_cmd("waybar")
+    hl.exec_cmd("dunst")
     hl.exec_cmd("awww-daemon")
     hl.exec_cmd("sleep 2 && awww img ~/Pictures/Wallpapers/wallhaven-rq67k1.jpg")
 end)
@@ -70,6 +64,7 @@ end)
 
 hl.env("XCURSOR_SIZE", "20")
 hl.env("HYPRCURSOR_SIZE", "18")
+hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 
 
 -----------------------
@@ -96,6 +91,8 @@ hl.env("HYPRCURSOR_SIZE", "18")
 -----------------------
 
 -- Refer to https://wiki.hypr.land/Configuring/Basics/Variables/
+-- (this one block covers general/decoration/animations for all layouts —
+--  no need to repeat it per-layout section)
 
 hl.config({
     general = {
@@ -123,9 +120,10 @@ hl.config({
         },
         blur = {
             enabled = true,
-            size = 12,
-            passes = 4,
+            size = 8,
+            passes = 3,
             vibrancy = 0.25,
+            new_optimizations = true,
         },
     },
     animations = {
@@ -133,17 +131,17 @@ hl.config({
     },
 })
 
-hl.animation({ leaf = "fade",          enabled = true,  speed = 3.03, bezier = "quick" })
-hl.animation({ leaf = "layers",        enabled = true,  speed = 3.81, bezier = "easeOutQuint" })
-hl.animation({ leaf = "layersIn",      enabled = true,  speed = 4,    bezier = "easeOutQuint", style = "fade" })
-hl.animation({ leaf = "layersOut",     enabled = true,  speed = 1.5,  bezier = "linear",       style = "fade" })
-hl.animation({ leaf = "fadeLayersIn",  enabled = true,  speed = 1.79, bezier = "almostLinear" })
-hl.animation({ leaf = "fadeLayersOut", enabled = true,  speed = 1.39, bezier = "almostLinear" })
+hl.animation({ leaf = "fade",          enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "layers",        enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "layersIn",      enabled = true, speed = 4, bezier = "default", style = "fade" })
+hl.animation({ leaf = "layersOut",     enabled = true, speed = 3, bezier = "default", style = "fade" })
+hl.animation({ leaf = "fadeLayersIn",  enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 4, bezier = "default" })
 hl.animation({ leaf = "workspaces", enabled = false })
 hl.animation({ leaf = "workspacesIn", enabled = false })
 hl.animation({ leaf = "workspacesOut", enabled = false })
-hl.animation({ leaf = "zoomFactor",    enabled = true,  speed = 7,    bezier = "quick" })
-hl.animation({ leaf = "windows", enabled = true, speed = 3.5, bezier = "easeOutQuint" })
+hl.animation({ leaf = "zoomFactor", enabled = true, speed = 6, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 4, bezier = "default" })
 
 -- Ref https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 -- "Smart gaps" / "No gaps when only"
@@ -163,197 +161,10 @@ hl.animation({ leaf = "windows", enabled = true, speed = 3.5, bezier = "easeOutQ
 --     rounding    = 0,
 -- })
 
--- See https://wiki.hypr.land/Configuring/Layouts/Dwindle-Layout/ for more
-hl.config({
-    general = {
-        gaps_in = 6,
-        gaps_out = 12,
-        border_size = 2,
-        col = {
-            active_border = { colors = {"rgba(888888ff)", "rgba(444444ff)"}, angle = 45 },
-            inactive_border = "rgba(333333aa)",
-        },
-        resize_on_border = false,
-        allow_tearing = false,
-        layout = "dwindle",
-    },
-    decoration = {
-        rounding = 8,
-        rounding_power = 2,
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
-        shadow = {
-            enabled = true,
-            range = 6,
-            render_power = 3,
-            color = 0xee1a1a1a,
-        },
-        blur = {
-            enabled = true,
-            size = 12,
-            passes = 4,
-            vibrancy = 0.25,
-        },
-    },
-    animations = {
-        enabled = true,
-    },
-})
-
--- See https://wiki.hypr.land/Configuring/Layouts/Master-Layout/ for more
-hl.config({
-    general = {
-        gaps_in = 6,
-        gaps_out = 12,
-        border_size = 2,
-        col = {
-            active_border = { colors = {"rgba(888888ff)", "rgba(444444ff)"}, angle = 45 },
-            inactive_border = "rgba(333333aa)",
-        },
-        resize_on_border = false,
-        allow_tearing = false,
-        layout = "dwindle",
-    },
-    decoration = {
-        rounding = 8,
-        rounding_power = 2,
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
-        shadow = {
-            enabled = true,
-            range = 6,
-            render_power = 3,
-            color = 0xee1a1a1a,
-        },
-        blur = {
-            enabled = true,
-            size = 12,
-            passes = 4,
-            vibrancy = 0.25,
-        },
-    },
-    animations = {
-        enabled = true,
-    },
-})
-
--- See https://wiki.hypr.land/Configuring/Layouts/Scrolling-Layout/ for more
-hl.config({
-    general = {
-        gaps_in = 6,
-        gaps_out = 12,
-        border_size = 2,
-        col = {
-            active_border = { colors = {"rgba(888888ff)", "rgba(444444ff)"}, angle = 45 },
-            inactive_border = "rgba(333333aa)",
-        },
-        resize_on_border = false,
-        allow_tearing = false,
-        layout = "dwindle",
-    },
-    decoration = {
-        rounding = 8,
-        rounding_power = 2,
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
-        shadow = {
-            enabled = true,
-            range = 6,
-            render_power = 3,
-            color = 0xee1a1a1a,
-        },
-        blur = {
-            enabled = true,
-            size = 12,
-            passes = 4,
-            vibrancy = 0.25,
-        },
-    },
-    animations = {
-        enabled = true,
-    },
-})
-
-----------------
-----  MISC  ----
-----------------
-
-hl.config({
-    general = {
-        gaps_in = 6,
-        gaps_out = 12,
-        border_size = 2,
-        col = {
-            active_border = { colors = {"rgba(888888ff)", "rgba(444444ff)"}, angle = 45 },
-            inactive_border = "rgba(333333aa)",
-        },
-        resize_on_border = false,
-        allow_tearing = false,
-        layout = "dwindle",
-    },
-    decoration = {
-        rounding = 8,
-        rounding_power = 2,
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
-        shadow = {
-            enabled = true,
-            range = 6,
-            render_power = 3,
-            color = 0xee1a1a1a,
-        },
-        blur = {
-            enabled = true,
-            size = 12,
-            passes = 4,
-            vibrancy = 0.25,
-        },
-    },
-    animations = {
-        enabled = true,
-    },
-})
-
 
 ---------------
 ---- INPUT ----
 ---------------
-
-hl.config({
-    general = {
-        gaps_in = 6,
-        gaps_out = 12,
-        border_size = 2,
-        col = {
-            active_border = { colors = {"rgba(888888ff)", "rgba(444444ff)"}, angle = 45 },
-            inactive_border = "rgba(333333aa)",
-        },
-        resize_on_border = false,
-        allow_tearing = false,
-        layout = "dwindle",
-    },
-    decoration = {
-        rounding = 8,
-        rounding_power = 2,
-        active_opacity = 1.0,
-        inactive_opacity = 1.0,
-        shadow = {
-            enabled = true,
-            range = 6,
-            render_power = 3,
-            color = 0xee1a1a1a,
-        },
-        blur = {
-            enabled = true,
-            size = 12,
-            passes = 4,
-            vibrancy = 0.25,
-        },
-    },
-    animations = {
-        enabled = true,
-    },
-})
 
 hl.gesture({
     fingers = 3,
@@ -361,12 +172,8 @@ hl.gesture({
     action = "workspace"
 })
 
--- Example per-device config
--- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Devices/ for more
-hl.device({
-    name        = "epic-mouse-v1",
-    sensitivity = -0.5,
-})
+-- Add per-device config here if needed:
+-- https://wiki.hypr.land/Configuring/Advanced-and-Cool/Devices/
 
 
 ---------------------
@@ -379,7 +186,7 @@ local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 hl.bind(mainMod .. " + Q", hl.dsp.exec_cmd(terminal))
 local closeWindowBind = hl.bind(mainMod .. " + C", hl.dsp.window.close())
 -- closeWindowBind:set_enabled(false)
-hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
+hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch exit"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(fileManager))
 hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
@@ -412,7 +219,6 @@ end
 
 -- Example special workspace (scratchpad)
 hl.bind(mainMod .. " + S",         hl.dsp.workspace.toggle_special("magic"))
-hl.bind(mainMod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic" }))
 
 -- Scroll through existing workspaces with mainMod + scroll
 hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
