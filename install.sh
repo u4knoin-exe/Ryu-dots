@@ -30,21 +30,33 @@ install_deps() {
                 hyprland waybar kitty rofi cava fastfetch starship \
                 playerctl brightnessctl wireplumber networkmanager \
                 dunst wl-clipboard cliphist grim slurp \
-                hyprlock hypridle gammastep
+                hyprlock hypridle gammastep \
+                qt6ct breeze-icons
+
+            if command -v yay >/dev/null 2>&1; then
+                yay -S --needed bibata-cursor-theme-bin
+            elif command -v paru >/dev/null 2>&1; then
+                paru -S --needed bibata-cursor-theme-bin
+            else
+                echo "  note: bibata-cursor-theme is AUR-only — install manually with your AUR helper, e.g.:"
+                echo "        yay -S bibata-cursor-theme-bin"
+            fi
             ;;
         fedora)
             sudo dnf install -y \
                 hyprland waybar kitty rofi cava fastfetch starship \
                 playerctl brightnessctl wireplumber NetworkManager \
                 dunst wl-clipboard cliphist grim slurp \
-                hyprlock hypridle gammastep
+                hyprlock hypridle gammastep \
+                qt6ct breeze-icon-theme
             ;;
         debian)
             sudo apt update
             sudo apt install -y \
                 hyprland waybar kitty rofi cava fastfetch \
                 playerctl brightnessctl wireplumber network-manager \
-                dunst wl-clipboard cliphist grim slurp
+                dunst wl-clipboard cliphist grim slurp \
+                qt6ct breeze-icon-theme
             ;;
         nixos)
             echo "NixOS detected — skipping package installation."
@@ -102,7 +114,7 @@ fi
 
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
 
-for dir in hypr waybar kitty rofi fastfetch dunst gammastep waypaper Thunar zed btop; do
+for dir in hypr waybar kitty rofi fastfetch dunst gammastep waypaper Thunar zed btop gtk-3.0 gtk-4.0 qt6ct; do
     copy_dir "$dir"
 done
 
