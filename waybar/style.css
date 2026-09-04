@@ -53,6 +53,37 @@ window#waybar {
     background: rgba(255, 255, 255, 0.08);
 }
 
+#battery.warning {
+    color: rgba(230, 190, 90, 0.95);
+}
+
+#battery.critical {
+    color: rgba(220, 90, 90, 0.95);
+}
+
+#battery.critical:not(.charging) {
+    animation: blink 1.5s linear infinite alternate;
+}
+
+@keyframes blink {
+    to {
+        color: rgba(255, 255, 255, 0.95);
+    }
+}
+
+#tray {
+    padding: 0 9px;
+    margin: 4px 1px;
+}
+
+#tray > .passive {
+    opacity: 0.5;
+}
+
+#tray > .needs-attention {
+    color: rgba(220, 90, 90, 0.95);
+}
+
 tooltip {
     background: rgba(10, 10, 14, 0.94);
     border: 1px solid rgba(255, 255, 255, 0.12);

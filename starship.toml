@@ -15,3 +15,12 @@ format = "[$user]($style) "
 ssh_only = false
 style = "dimmed white"
 format = "[$hostname]($style) "
+
+[git_branch]
+symbol = " "
+style = "dimmed white"
+format = "[on](dimmed white) [$symbol$branch]($style) "
+
+[git_status]
+style = "bold rgb(200,80,80)"
+format = "([$all_status$ahead_behind]($style)) "

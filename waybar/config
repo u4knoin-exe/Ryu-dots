@@ -16,6 +16,7 @@
         "custom/cava"
     ],
     "modules-right": [
+        "tray",
         "custom/volume",
         "network",
         "battery"
@@ -23,6 +24,10 @@
     "custom/cachyos": {
         "format": "\uf313",
         "tooltip": "CachyOS"
+    },
+    "tray": {
+        "icon-size": 16,
+        "spacing": 8
     },
     "hyprland/workspaces": {
         "format": "{icon}",
@@ -37,7 +42,8 @@
         }
     },
     "clock": {
-        "format": "{:%H:%M}"
+        "format": "{:%H:%M}",
+        "tooltip-format": "{:%A, %d %B %Y}"
     },
     "custom/music": {
         "format": "\udb80\udf88 {}",
@@ -60,7 +66,14 @@
     },
     "battery": {
         "on-click": "~/.local/bin/battery-menu",
-        "format": "\udb80\udc79 {capacity}%"
+        "format": "\udb80\udc79 {capacity}%",
+        "format-warning": "\udb80\udc7a {capacity}%",
+        "format-critical": "\udb80\udc78 {capacity}%",
+        "states": {
+            "warning": 20,
+            "critical": 10
+        },
+        "tooltip-format": "{capacity}% \u2022 {time}"
     },
     "custom/volume": {
         "format": "{}",
