@@ -98,6 +98,21 @@ while true; do
 
     [ -z "$ssid" ] && continue
 
-    nmcli device wifi connect "$ssid"
+    # Figure out if this network is secured and whether we already have a saved profile for it.
+    security=$(nmcli -t -f SSID,SECURITY device wifi list | awk -F: -v s="$ssid" '$1 == s {print $2; exit}')
+    known=$(nmcli -t -f NAME connection show | grep -Fxq "$ssid" && echo yes || echo no)
+
+    if [ "$security" != "--" ] && [ "$known" = "no" ]; then
+        password=$(rofi -dmenu -password -theme "$THEME" -p "Password for $ssid")
+        [ -z "$password" ] && continue
+
+        if ! nmcli device wifi connect "$ssid" password "$password"; then
+            printf 'Failed to connect\n' | rofi -dmenu -theme "$THEME" -p "󰖩"
+        fi
+    else
+        if ! nmcli device wifi connect "$ssid"; then
+            printf 'Failed to connect\n' | rofi -dmenu -theme "$THEME" -p "󰖩"
+        fi
+    fi
 
 done
