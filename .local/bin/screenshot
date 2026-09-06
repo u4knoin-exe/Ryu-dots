@@ -1,3 +1,13 @@
 #!/bin/sh
-f="$HOME/Pictures/Screenshots/$(date +%Y-%m-%d_%H-%M-%S).png"
-grim -g "$(slurp)" "$f" && wl-copy < "$f"
+dir="$HOME/Pictures/Screenshots"
+mkdir -p "$dir"
+f="$dir/$(date +%Y-%m-%d_%H-%M-%S).png"
+
+geometry=$(slurp) || exit 0  # user hit Esc — bail quietly, not an error
+
+if grim -g "$geometry" "$f"; then
+    wl-copy < "$f"
+    notify-send -u low "Screenshot" "Saved and copied to clipboard"
+else
+    notify-send -u critical "Screenshot" "grim failed to capture"
+fi

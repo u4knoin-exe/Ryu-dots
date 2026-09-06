@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# Toggles a lightweight mode: no animations, no blur, no shadows, no gaps.
+# Adapted from JaKooLit's Hyprland-Dots GameMode.sh — simplified for this
+# rice's stack (uses hyprctl reload to restore, instead of hand-restoring
+# every value, so it can't drift out of sync with hyprland.lua over time).
+
+ENABLED=$(hyprctl getoption animations:enabled | awk 'NR==1{print $2}')
+
+if [ "$ENABLED" = "1" ]; then
+    hyprctl --batch "\
+        keyword animations:enabled 0;\
+        keyword decoration:shadow:enabled 0;\
+        keyword decoration:blur:enabled 0;\
+        keyword general:gaps_in 0;\
+        keyword general:gaps_out 0;\
+        keyword general:border_size 1;\
+        keyword decoration:rounding 0"
+    notify-send -u low "Game Mode" "Enabled — animations, blur, and shadows off"
+else
+    hyprctl reload
+    notify-send -u normal "Game Mode" "Disabled — rice restored"
+fi

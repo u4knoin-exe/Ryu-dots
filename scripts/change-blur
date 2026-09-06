@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Quick blur on/off toggle at runtime.
+# Adapted from JaKooLit's Hyprland-Dots ChangeBlur.sh — toggles between
+# this rice's actual configured blur (size 8, passes 3) and a light/off state,
+# instead of JaKooLit's arbitrary values.
+
+STATE=$(hyprctl -j getoption decoration:blur:passes | jq ".int")
+
+if [ "$STATE" = "3" ]; then
+    hyprctl keyword decoration:blur:size 2
+    hyprctl keyword decoration:blur:passes 1
+    notify-send -u low "Blur" "Reduced"
+else
+    hyprctl keyword decoration:blur:size 8
+    hyprctl keyword decoration:blur:passes 3
+    notify-send -u low "Blur" "Normal"
+fi

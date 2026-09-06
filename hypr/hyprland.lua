@@ -54,7 +54,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("dunst")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("awww-daemon")
-    hl.exec_cmd("sleep 2 && awww img ~/Pictures/Wallpapers/wallhaven-rq67k1.jpg")
+    hl.exec_cmd("sleep 2 && awww img ~/Pictures/Wallpapers/wallhaven-rq67k1.jpg && ~/.local/bin/wallpaper-theme ~/Pictures/Wallpapers/wallhaven-rq67k1.jpg")
 end)
 
 -------------------------------
@@ -133,17 +133,25 @@ hl.config({
     },
 })
 
-hl.animation({ leaf = "fade",          enabled = true, speed = 4, bezier = "default" })
+-- Custom bezier curves, borrowed from JaKooLit's Hyprland-Dots
+hl.curve("wind",      { type = "bezier", points = { {0.05, 0.9},  {0.1, 1.05} } })
+hl.curve("winIn",     { type = "bezier", points = { {0.1, 1.1},   {0.1, 1.1} } })
+hl.curve("winOut",    { type = "bezier", points = { {0.3, -0.3},  {0, 1} } })
+hl.curve("overshot",  { type = "bezier", points = { {0.05, 0.9},  {0.1, 1.05} } })
+hl.curve("smoothOut", { type = "bezier", points = { {0.5, 0},     {0.99, 0.99} } })
+hl.curve("smoothIn",  { type = "bezier", points = { {0.5, -0.5},  {0.68, 1.5} } })
+
+hl.animation({ leaf = "fade",          enabled = true, speed = 3, bezier = "smoothOut" })
 hl.animation({ leaf = "layers",        enabled = true, speed = 4, bezier = "default" })
 hl.animation({ leaf = "layersIn",      enabled = true, speed = 4, bezier = "default", style = "fade" })
 hl.animation({ leaf = "layersOut",     enabled = true, speed = 3, bezier = "default", style = "fade" })
 hl.animation({ leaf = "fadeLayersIn",  enabled = true, speed = 4, bezier = "default" })
 hl.animation({ leaf = "fadeLayersOut", enabled = true, speed = 4, bezier = "default" })
-hl.animation({ leaf = "workspaces", enabled = false })
-hl.animation({ leaf = "workspacesIn", enabled = false })
-hl.animation({ leaf = "workspacesOut", enabled = false })
+hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "overshot", style = "slide" })
+hl.animation({ leaf = "workspacesIn", enabled = true, speed = 5, bezier = "winIn", style = "slide" })
+hl.animation({ leaf = "workspacesOut", enabled = true, speed = 5, bezier = "winOut", style = "slide" })
 hl.animation({ leaf = "zoomFactor", enabled = true, speed = 6, bezier = "default" })
-hl.animation({ leaf = "windows", enabled = true, speed = 4, bezier = "default" })
+hl.animation({ leaf = "windows", enabled = true, speed = 6, bezier = "wind", style = "slide" })
 
 -- Ref https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 -- "Smart gaps" / "No gaps when only"
