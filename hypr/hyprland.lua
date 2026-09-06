@@ -38,7 +38,7 @@ hl.monitor({
 
 -- Set programs that you use
 local terminal    = "kitty --working-directory ~"
-local fileManager = "dolphin"
+local fileManager = "thunar"
 local menu        = "hyprlauncher"
 
 
