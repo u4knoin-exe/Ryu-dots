@@ -1,0 +1,39 @@
+[config]
+# We don't set the wallpaper here — waypaper already handles that.
+# matugen just generates the palette and writes/reloads the templates below.
+# Waybar stays static/monochrome on purpose — not themed by wallpaper.
+
+[templates.kitty]
+input_path = '~/.config/matugen/templates/kitty-colors.conf'
+output_path = '~/.config/kitty/colors.conf'
+# kitty auto-reloads its config (and includes) on file change — no restart needed.
+
+[templates.starship]
+input_path = '~/.config/matugen/templates/starship-colors.toml'
+output_path = '~/.config/starship.toml'
+# starship reads config fresh on every prompt — no reload needed.
+
+[templates.gtk3]
+input_path = '~/.config/matugen/templates/gtk-colors.css'
+output_path = '~/.config/gtk-3.0/gtk.css'
+# GTK3 apps pick this up on next launch — no reload needed.
+
+[templates.gtk4]
+input_path = '~/.config/matugen/templates/gtk-colors.css'
+output_path = '~/.config/gtk-4.0/gtk.css'
+# GTK4/libadwaita apps pick this up on next launch — no reload needed.
+
+[templates.rofi]
+input_path = '~/.config/matugen/templates/rofi-colors.rasi'
+output_path = '~/.config/rofi/colors.rasi'
+# rofi reads its theme fresh each time it's launched — no reload needed.
+
+[templates.dunst]
+input_path = '~/.config/matugen/templates/dunst-colors.rc'
+output_path = '~/.config/dunst/dunstrc'
+post_hook = 'pkill dunst; sleep 0.3; dunst &'
+
+[templates.hyprlock]
+input_path = '~/.config/matugen/templates/hyprlock-colors.conf'
+output_path = '~/.config/hypr/hyprlock-colors.conf'
+# hyprlock reads config fresh on each launch — no reload needed.

@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Wraps matugen: measures the wallpaper's average saturation and picks
+# scheme-monochrome for genuinely grayscale/near-grayscale images,
+# scheme-tonal-spot (matugen's normal colorful default) otherwise.
+#
+# Usage: wallpaper-theme <path-to-image>
+
+set -euo pipefail
+
+image="${1:?Usage: wallpaper-theme <path-to-image>}"
+THRESHOLD=0.08
+
+if ! command -v convert >/dev/null 2>&1; then
+    echo "imagemagick not found, defaulting to colorful scheme" >&2
+    matugen image "$image" -m dark --source-color-index 0
+    exit $?
+fi
+
+saturation=$(convert "$image" -resize 100x100 -colorspace HSB -channel G -separate +channel -format "%[fx:mean]" info: 2>/dev/null || echo "1")
+
+is_grayscale=$(awk -v s="$saturation" -v t="$THRESHOLD" 'BEGIN { print (s < t) ? "1" : "0" }')
+
+if [ "$is_grayscale" = "1" ]; then
+    echo "wallpaper saturation $saturation < $THRESHOLD — using monochrome scheme" >&2
+    matugen image "$image" -m dark --source-color-index 0 --type scheme-monochrome
+else
+    echo "wallpaper saturation $saturation — using colorful scheme" >&2
+    matugen image "$image" -m dark --source-color-index 0
+fi

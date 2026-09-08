@@ -1,0 +1,5 @@
+/* Default — matugen overwrites this once you run it on a wallpaper. */
+* {
+    accent: #7dd3fc;
+    on-accent: #0a0a0d;
+}

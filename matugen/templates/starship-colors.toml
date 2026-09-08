@@ -1,0 +1,33 @@
+format = """
+[](fg:{{colors.primary.dark.hex}})[  $username](bg:{{colors.primary.dark.hex}} fg:{{colors.on_primary.dark.hex}} bold)[@$hostname ](bg:{{colors.primary.dark.hex}} fg:{{colors.on_primary.dark.hex}} bold)[](fg:{{colors.primary.dark.hex}} bg:{{colors.secondary.dark.hex}})[ 󰉋 $directory ](bg:{{colors.secondary.dark.hex}} fg:{{colors.on_secondary.dark.hex}} bold)[](fg:{{colors.secondary.dark.hex}} bg:{{colors.tertiary.dark.hex}})[  $time ](bg:{{colors.tertiary.dark.hex}} fg:{{colors.on_tertiary.dark.hex}} bold)[](fg:{{colors.tertiary.dark.hex}})$git_branch$git_status
+$character"""
+
+[username]
+show_always = true
+format = "$user"
+
+[hostname]
+ssh_only = false
+format = "$hostname"
+
+[directory]
+truncation_length = 3
+format = "$path"
+
+[time]
+disabled = false
+format = "$time"
+time_format = "%H:%M"
+
+[character]
+success_symbol = "[❯](bold white)"
+error_symbol = "[❯](bold red)"
+
+[git_branch]
+symbol = " "
+style = "bold {{colors.primary.dark.hex}}"
+format = "  [$symbol$branch]($style)"
+
+[git_status]
+style = "bold {{colors.error.dark.hex}}"
+format = "([ $all_status$ahead_behind]($style))"
