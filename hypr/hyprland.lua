@@ -53,7 +53,6 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
     hl.exec_cmd("dunst")
     hl.exec_cmd("hypridle")
-    hl.exec_cmd("sleep 3; gammastep")
     hl.exec_cmd("awww-daemon")
     hl.exec_cmd("sleep 2 && awww img ~/Pictures/Wallpapers/wallhaven-rq67k1.jpg && ~/.local/bin/wallpaper-theme ~/Pictures/Wallpapers/wallhaven-rq67k1.jpg")
 end)
@@ -99,40 +98,55 @@ hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 
 hl.config({
     general = {
-        gaps_in = 6,
-        gaps_out = 12,
+        gaps_in = 5,
+        gaps_out = 14,
         border_size = 2,
+        -- Catppuccin Mocha mauve -> lavender sweep instead of flat grey
         col = {
-            active_border = { colors = {"rgba(888888ff)", "rgba(444444ff)"}, angle = 45 },
-            inactive_border = "rgba(333333aa)",
+            active_border = { colors = {"rgba(cba6f7ff)", "rgba(b4befeff)", "rgba(89b4faff)"}, angle = 45 },
+            inactive_border = "rgba(11111baa)",
         },
-        resize_on_border = false,
+        resize_on_border = true,
         allow_tearing = false,
         layout = "dwindle",
     },
     decoration = {
-        rounding = 8,
-        rounding_power = 2,
+        rounding = 14,
+        rounding_power = 3,
         active_opacity = 1.0,
-        inactive_opacity = 1.0,
+        inactive_opacity = 0.94,
+        dim_inactive = true,
+        dim_strength = 0.06,
         shadow = {
             enabled = true,
-            range = 6,
+            range = 22,
             render_power = 3,
-            color = 0xee1a1a1a,
+            color = 0xaa11111b,
+            color_inactive = 0x6611111b,
         },
         blur = {
             enabled = true,
-            size = 8,
-            passes = 3,
-            vibrancy = 0.25,
+            size = 6,
+            passes = 4,
+            vibrancy = 0.22,
             new_optimizations = true,
+            xray = false,
+            special = true,
+            popups = true,
         },
     },
     animations = {
         enabled = true,
     },
 })
+
+-- Extra polish: blur + rounding on layer-shell surfaces (waybar, rofi, dunst,
+-- swaync-style popups) so they match the window glass look instead of
+-- sitting on top as flat rectangles
+hl.layer_rule({ layer = "waybar",  rules = {"blur", "ignorezero"} })
+hl.layer_rule({ layer = "rofi",    rules = {"blur", "ignorezero"} })
+hl.layer_rule({ layer = "notifications", rules = {"blur", "ignorezero"} })
+hl.layer_rule({ layer = "logout_dialog",  rules = {"blur", "ignorezero"} })
 
 -- Custom bezier curves, borrowed from JaKooLit's Hyprland-Dots
 hl.curve("wind",      { type = "bezier", points = { {0.05, 0.9},  {0.1, 1.05} } })
@@ -153,6 +167,10 @@ hl.animation({ leaf = "workspacesIn", enabled = true, speed = 5, bezier = "winIn
 hl.animation({ leaf = "workspacesOut", enabled = true, speed = 5, bezier = "winOut", style = "slide" })
 hl.animation({ leaf = "zoomFactor", enabled = true, speed = 6, bezier = "default" })
 hl.animation({ leaf = "windows", enabled = true, speed = 6, bezier = "wind", style = "slide" })
+
+-- Slowly rotating active-border gradient — subtle, not a strobe
+hl.animation({ leaf = "border", enabled = true, speed = 6, bezier = "default" })
+hl.animation({ leaf = "borderangle", enabled = true, speed = 20, bezier = "linear", style = "loop" })
 
 -- Ref https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
 -- "Smart gaps" / "No gaps when only"
@@ -304,3 +322,9 @@ hl.window_rule({
     float = true,
 })
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("hyprlock"))
+
+-- Ryu-dots theme layer: ryu-theme.lua is overwritten by `ryu-theme <name>`
+-- (void/glass/ryu) and only carries cosmetic decoration/animation/border
+-- settings. Everything above (binds, exec-once, gestures) is shared and
+-- untouched by theme switches.
+require("ryu-theme")

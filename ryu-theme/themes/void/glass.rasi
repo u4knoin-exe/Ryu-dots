@@ -1,0 +1,25 @@
+configuration {
+    modi: "drun";
+    show-icons: true;
+    font: "JetBrainsMono Nerd Font 12";
+}
+* { background-color: transparent; text-color: #e8e8e8; }
+window {
+    width: 600px;
+    background-color: rgba(10, 10, 10, 0.94);
+    border: 1px; border-color: rgba(255, 255, 255, 0.10);
+    border-radius: 8px; padding: 20px;
+}
+mainbox { background-color: transparent; children: [ inputbar, listview ]; spacing: 14px; }
+inputbar {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px; border-color: rgba(255, 255, 255, 0.08);
+    border-radius: 6px; children: [ prompt, entry ]; padding: 10px 14px;
+}
+prompt { background-color: transparent; text-color: rgba(255, 255, 255, 0.4); }
+entry { background-color: transparent; text-color: #ffffff; placeholder: "Search applications..."; placeholder-color: rgba(255, 255, 255, 0.3); }
+listview { background-color: transparent; lines: 6; spacing: 4px; scrollbar: false; }
+element { background-color: transparent; border-radius: 4px; padding: 9px; }
+element selected { background-color: rgba(255, 255, 255, 0.10); }
+element-text { background-color: transparent; text-color: #e8e8e8; vertical-align: 0.5; }
+element-icon { background-color: transparent; size: 30px; margin: 0 12px 0 0; }

@@ -1,0 +1,61 @@
+#!/bin/bash
+set -euo pipefail
+
+THEME="${1:-}"
+REPO_THEMES="$HOME/Ryu-dots/ryu-theme/themes"
+BACKUP_DIR="$HOME/.ryu-theme-backups/$(date +%Y%m%d-%H%M%S)"
+
+if [[ -z "$THEME" || ! -d "$REPO_THEMES/$THEME" ]]; then
+    echo "Usage: ryu-theme {void|glass|ryu}"
+    echo "Available: $(ls "$REPO_THEMES")"
+    exit 1
+fi
+
+SRC="$REPO_THEMES/$THEME"
+
+# --- validate before touching anything live ---
+if command -v python3 >/dev/null; then
+    python3 - "$SRC/waybar-style.css" <<'PYEOF' || { echo "waybar-style.css failed a basic brace-balance check"; exit 1; }
+import sys
+s = open(sys.argv[1]).read()
+assert s.count("{") == s.count("}"), "unbalanced braces"
+PYEOF
+fi
+
+# --- backup current live configs ---
+mkdir -p "$BACKUP_DIR"
+cp "$HOME/.config/hypr/hyprland.lua"      "$BACKUP_DIR/" 2>/dev/null || true
+cp "$HOME/.config/waybar/style.css"       "$BACKUP_DIR/" 2>/dev/null || true
+cp "$HOME/.config/rofi/glass.rasi"        "$BACKUP_DIR/" 2>/dev/null || true
+cp "$HOME/.config/dunst/dunstrc"          "$BACKUP_DIR/" 2>/dev/null || true
+cp "$HOME/.config/hypr/ryu-theme.lua"     "$BACKUP_DIR/" 2>/dev/null || true
+echo "Backed up current configs to $BACKUP_DIR"
+
+# --- copy theme files into place ---
+cp "$SRC/decoration.lua"   "$HOME/.config/hypr/ryu-theme.lua"
+cp "$SRC/waybar-style.css" "$HOME/.config/waybar/style.css"
+cp "$SRC/glass.rasi"       "$HOME/.config/rofi/glass.rasi"
+cp "$SRC/dunstrc"          "$HOME/.config/dunst/dunstrc"
+
+# --- validate hyprland lua loads without crashing the compositor ---
+if ! hyprctl reload 2>&1 | tee /tmp/ryu-theme-reload.log | grep -qi error; then
+    echo "Hyprland reloaded OK."
+else
+    echo "Hyprland reload reported an error — restoring backup:"
+    cat /tmp/ryu-theme-reload.log
+    cp "$BACKUP_DIR/hyprland.lua"  "$HOME/.config/hypr/hyprland.lua" 2>/dev/null || true
+    cp "$BACKUP_DIR/style.css"     "$HOME/.config/waybar/style.css"  2>/dev/null || true
+    hyprctl reload
+    exit 1
+fi
+
+# --- restart only what's needed, never Hyprland itself ---
+killall waybar 2>/dev/null || true
+waybar >/dev/null 2>&1 &
+disown
+
+killall dunst 2>/dev/null || true
+dunst >/dev/null 2>&1 &
+disown
+
+echo "Switched to $THEME."
