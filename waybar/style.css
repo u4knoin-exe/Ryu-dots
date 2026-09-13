@@ -3,54 +3,59 @@
     font-size: 13px;
     border: none;
     min-height: 0;
+    transition: all 0.18s cubic-bezier(0.3, 0, 0.2, 1);
 }
 
 window#waybar {
     background: rgba(10, 10, 14, 0.72);
     border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 14px;
+    border-radius: 16px;
     color: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
 }
 
 #workspaces {
-    margin: 4px 8px;
+    margin: 5px 9px;
 }
 
 #workspaces button {
-    padding: 0 7px;
+    padding: 0 8px;
     margin: 0 2px;
-    border-radius: 9px;
-    color: rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.32);
     background: transparent;
 }
 
 #workspaces button.active {
-    color: rgba(255, 255, 255, 0.95);
-    background: rgba(255, 255, 255, 0.12);
+    color: rgba(17, 17, 27, 0.95);
+    background: linear-gradient(135deg, rgba(203, 166, 247, 0.95), rgba(137, 180, 250, 0.95));
+    font-weight: 700;
+    min-width: 22px;
 }
 
 #workspaces button:hover {
     color: rgba(255, 255, 255, 0.9);
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.10);
 }
 
 #clock {
     padding: 0 14px;
     font-weight: 600;
+    color: rgba(203, 166, 247, 0.95);
 }
 
 #pulseaudio,
 #network,
 #battery {
-    padding: 0 9px;
+    padding: 0 10px;
     margin: 4px 1px;
-    border-radius: 9px;
+    border-radius: 10px;
 }
 
 #pulseaudio:hover,
 #network:hover,
 #battery:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.10);
 }
 
 #battery.warning {
@@ -86,8 +91,8 @@ window#waybar {
 
 tooltip {
     background: rgba(10, 10, 14, 0.94);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 10px;
+    border: 1px solid rgba(203, 166, 247, 0.25);
+    border-radius: 12px;
 }
 
 tooltip label {
@@ -96,17 +101,18 @@ tooltip label {
 
 
 #custom-music:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.10);
     color: rgba(255, 255, 255, 0.95);
 }
 
 #custom-cachyos {
-    padding: 0 10px;
-    margin: 4px 2px;
-    border-radius: 9px;
+    padding: 0 11px;
+    margin: 4px 3px;
+    border-radius: 10px;
     font-size: 17px;
+    color: rgba(137, 180, 250, 0.95);
 }
 
 #custom-cachyos:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.10);
 }
