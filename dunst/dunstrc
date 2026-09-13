@@ -8,7 +8,7 @@ offset = (14, 48)
 notification_limit = 4
 font = JetBrainsMono Nerd Font 10
 frame_width = 1
-corner_radius = 14
+corner_radius = 16
 padding = 10
 horizontal_padding = 12
 text_icon_padding = 8
@@ -18,7 +18,7 @@ format = "<b>%s</b>\n%b"
 markup = full
 word_wrap = yes
 ignore_newline = no
-transparency = 8
+transparency = 25
 show_indicators = no
 icon_position = left
 max_icon_size = 48
@@ -35,17 +35,17 @@ mouse_right_click = close_current
 [urgency_low]
 timeout = 3
 background = "#0a0a0e"
-foreground = "#888890"
-frame_color = "#29292f"
+foreground = "#c8c8d0"
+frame_color = "#ffffff30"
 
 [urgency_normal]
 timeout = 10
 background = "#0a0a0e"
 foreground = "#e8e8ec"
-frame_color = "#3a3a42"
+frame_color = "#ffffff40"
 
 [urgency_critical]
 timeout = 0
 background = "#0a0a0e"
 foreground = "#ffffff"
-frame_color = "#666670"
+frame_color = "#ffffff70"

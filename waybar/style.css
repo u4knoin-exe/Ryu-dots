@@ -5,114 +5,25 @@
     min-height: 0;
     transition: all 0.18s cubic-bezier(0.3, 0, 0.2, 1);
 }
-
 window#waybar {
-    background: rgba(10, 10, 14, 0.72);
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    background: rgba(10, 10, 14, 0.62);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 16px;
-    color: rgba(255, 255, 255, 0.88);
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
 }
-
-#workspaces {
-    margin: 5px 9px;
-}
-
+#workspaces { margin: 5px 9px; }
 #workspaces button {
-    padding: 0 8px;
-    margin: 0 2px;
-    border-radius: 10px;
-    color: rgba(255, 255, 255, 0.32);
-    background: transparent;
+    padding: 0 8px; margin: 0 2px; border-radius: 10px;
+    color: rgba(255, 255, 255, 0.32); background: transparent;
 }
-
 #workspaces button.active {
-    color: rgba(17, 17, 27, 0.95);
-    background: linear-gradient(135deg, rgba(203, 166, 247, 0.95), rgba(137, 180, 250, 0.95));
-    font-weight: 700;
-    min-width: 22px;
+    color: rgba(20,20,24,0.95); background: rgba(255,255,255,0.85); font-weight: 700; min-width: 22px;
 }
-
-#workspaces button:hover {
-    color: rgba(255, 255, 255, 0.9);
-    background: rgba(255, 255, 255, 0.10);
+#workspaces button:hover { color: rgba(255,255,255,0.9); background: rgba(255,255,255,0.10); }
+#clock { padding: 0 14px; font-weight: 600; color: rgba(255,255,255,0.92); }
+#pulseaudio, #network, #battery, #custom-cachyos {
+    padding: 0 10px; margin: 4px 1px; border-radius: 10px;
 }
-
-#clock {
-    padding: 0 14px;
-    font-weight: 600;
-    color: rgba(203, 166, 247, 0.95);
-}
-
-#pulseaudio,
-#network,
-#battery {
-    padding: 0 10px;
-    margin: 4px 1px;
-    border-radius: 10px;
-}
-
-#pulseaudio:hover,
-#network:hover,
-#battery:hover {
-    background: rgba(255, 255, 255, 0.10);
-}
-
-#battery.warning {
-    color: rgba(230, 190, 90, 0.95);
-}
-
-#battery.critical {
-    color: rgba(220, 90, 90, 0.95);
-}
-
-#battery.critical:not(.charging) {
-    animation: blink 1.5s linear infinite alternate;
-}
-
-@keyframes blink {
-    to {
-        color: rgba(255, 255, 255, 0.95);
-    }
-}
-
-#tray {
-    padding: 0 9px;
-    margin: 4px 1px;
-}
-
-#tray > .passive {
-    opacity: 0.5;
-}
-
-#tray > .needs-attention {
-    color: rgba(220, 90, 90, 0.95);
-}
-
-tooltip {
-    background: rgba(10, 10, 14, 0.94);
-    border: 1px solid rgba(203, 166, 247, 0.25);
-    border-radius: 12px;
-}
-
-tooltip label {
-    color: rgba(255, 255, 255, 0.9);
-}
-
-
-#custom-music:hover {
-    background: rgba(255, 255, 255, 0.10);
-    color: rgba(255, 255, 255, 0.95);
-}
-
-#custom-cachyos {
-    padding: 0 11px;
-    margin: 4px 3px;
-    border-radius: 10px;
-    font-size: 17px;
-    color: rgba(137, 180, 250, 0.95);
-}
-
-#custom-cachyos:hover {
-    background: rgba(255, 255, 255, 0.10);
-}
+#pulseaudio:hover, #network:hover, #battery:hover { background: rgba(255,255,255,0.10); }
+tooltip { background: rgba(10,10,14,0.9); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; }

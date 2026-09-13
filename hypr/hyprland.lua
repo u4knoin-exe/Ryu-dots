@@ -143,10 +143,10 @@ hl.config({
 -- Extra polish: blur + rounding on layer-shell surfaces (waybar, rofi, dunst,
 -- swaync-style popups) so they match the window glass look instead of
 -- sitting on top as flat rectangles
-hl.layer_rule({ layer = "waybar",  rules = {"blur", "ignorezero"} })
-hl.layer_rule({ layer = "rofi",    rules = {"blur", "ignorezero"} })
-hl.layer_rule({ layer = "notifications", rules = {"blur", "ignorezero"} })
-hl.layer_rule({ layer = "logout_dialog",  rules = {"blur", "ignorezero"} })
+hl.layer_rule({ name = "waybar-blur",   match = { namespace = "waybar" },   blur = true, ignore_alpha = 0 })
+hl.layer_rule({ name = "rofi-blur",     match = { namespace = "rofi" },     blur = true, ignore_alpha = 0 })
+hl.layer_rule({ name = "notif-blur",    match = { namespace = "notifications" }, blur = true, ignore_alpha = 0 })
+hl.layer_rule({ name = "logout-blur",   match = { namespace = "logout_dialog" }, blur = true, ignore_alpha = 0 })
 
 -- Custom bezier curves, borrowed from JaKooLit's Hyprland-Dots
 hl.curve("wind",      { type = "bezier", points = { {0.05, 0.9},  {0.1, 1.05} } })
