@@ -1,7 +1,84 @@
-* { color: #eeeeee; background-color: #0f0f12; }
-window { background: #0f0f12; }
-button { color: #eeeeee; background: #18181c; border: 1px solid #303038; border-radius: 10px; }
-button:hover, button:checked { color: #ffffff; background: #25252b; }
-entry, spinbutton, combobox, list, viewport { color: #eeeeee; background: #18181c; }
-menu, popover { color: #eeeeee; background: #18181c; }
-scrollbar { background: #0f0f12; }
+* {
+    color: #e8e8ec;
+    background-color: transparent;
+}
+
+window {
+    background-color: #0b0b0f;
+    border-radius: 18px;
+}
+
+headerbar {
+    background-color: #111116;
+    color: #eeeeee;
+    border: none;
+    box-shadow: none;
+}
+
+button {
+    color: #dddddf;
+    background-color: #15151a;
+    border: 1px solid #24242b;
+    border-radius: 12px;
+    padding: 6px;
+}
+
+button:hover {
+    color: #ffffff;
+    background-color: #1d1d24;
+    border-color: #363640;
+}
+
+button:checked {
+    color: #ffffff;
+    background-color: #202027;
+    border: 2px solid #8b8b96;
+}
+
+entry,
+spinbutton,
+combobox {
+    color: #eeeeee;
+    background-color: #15151a;
+    border: 1px solid #292930;
+    border-radius: 10px;
+}
+
+entry:focus,
+spinbutton:focus,
+combobox:focus {
+    border-color: #555560;
+}
+
+menu,
+popover {
+    color: #eeeeee;
+    background-color: #15151a;
+    border: 1px solid #292930;
+}
+
+scrollbar {
+    background-color: transparent;
+}
+
+scrollbar slider {
+    background-color: #34343c;
+    border-radius: 8px;
+    min-width: 6px;
+    min-height: 6px;
+}
+
+scrollbar slider:hover {
+    background-color: #50505a;
+}
+
+label {
+    color: #dddddf;
+}
+
+tooltip {
+    background-color: #15151a;
+    color: #eeeeee;
+    border: 1px solid #303038;
+    border-radius: 8px;
+}

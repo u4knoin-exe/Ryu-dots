@@ -1,17 +1,33 @@
 {
-    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+    "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
 
     "logo": {
         "type": "builtin",
-        "source": "CachyOS",
+        "source": "arch",
         "padding": {
-            "top": 1,
-            "right": 3
+            "right": 4
+        },
+        "color": {
+            "1": "cyan",
+            "2": "blue",
+            "3": "cyan",
+            "4": "blue"
         }
     },
 
     "display": {
-        "separator": "  "
+        "separator": "  ",
+        "brightColor": true,
+
+        "key": {
+            "type": "string",
+            "width": 9
+        },
+
+        "color": {
+            "keys": "cyan",
+            "title": "blue"
+        }
     },
 
     "modules": [
@@ -20,58 +36,68 @@
             "format": "{user-name}@{host-name}"
         },
 
-        "separator",
+        {
+            "type": "separator",
+            "string": "─"
+        },
 
         {
             "type": "os",
-            "key": "  OS"
-        },
-        {
-            "type": "kernel",
-            "key": "󰒋  Kernel"
-        },
-        {
-            "type": "uptime",
-            "key": "󰅐  Uptime"
-        },
-        {
-            "type": "wm",
-            "key": "  WM"
-        },
-        {
-            "type": "terminal",
-            "key": "  Terminal"
-        },
-        {
-            "type": "terminalfont",
-            "key": "󰛖  Font"
+            "key": "OS",
+            "format": "{name}"
         },
 
-        "separator",
+        {
+            "type": "kernel",
+            "key": "Kernel",
+            "format": "{release}"
+        },
+
+        {
+            "type": "uptime",
+            "key": "Up",
+            "format": "{days}d {hours}h {minutes}m"
+        },
+
+        {
+            "type": "wm",
+            "key": "WM",
+            "format": "{pretty-name}"
+        },
+
+        {
+            "type": "terminal",
+            "key": "Term",
+            "format": "{pretty-name}"
+        },
+
+        {
+            "type": "shell",
+            "key": "Shell",
+            "format": "{pretty-name}"
+        },
 
         {
             "type": "cpu",
-            "key": "  CPU"
+            "key": "CPU",
+            "format": "{name}"
         },
+
         {
             "type": "gpu",
-            "key": "󰢮  GPU"
+            "key": "GPU",
+            "format": "{name}"
         },
+
         {
             "type": "memory",
-            "key": "󰍛  Memory"
-        },
-        {
-            "type": "disk",
-            "key": "󰋊  Disk"
-        },
-        {
-            "type": "battery",
-            "key": "󰁹  Battery"
+            "key": "RAM",
+            "format": "{used} / {total}"
         },
 
-        "break",
-
-        "colors"
+        {
+            "type": "separator",
+            "string": "─"
+        }
     ]
 }
