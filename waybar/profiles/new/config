@@ -59,7 +59,7 @@
         "format-wifi": "󰤨",
         "format-disconnected": "󰤭",
         "format-ethernet": "󰈀",
-        "tooltip-format": "{ifname}: {ipaddr}"
+        "tooltip-format": "{ifname}: {ipaddr}",
     },
 
     "battery": {
