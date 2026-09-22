@@ -1,0 +1,75 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 36,
+    "margin-top": 7,
+    "margin-left": 350,
+    "margin-right": 350,
+
+    "modules-left": [
+        "custom/arch",
+        "hyprland/workspaces"
+    ],
+
+    "modules-center": [
+        "clock"
+    ],
+
+    "modules-right": [
+        "pulseaudio",
+        "network",
+        "battery"
+    ],
+
+    "custom/arch": {
+        "format": "󰣇",
+        "tooltip": "Arch Linux"
+    },
+
+    "hyprland/workspaces": {
+        "format": "{icon}",
+        "all-outputs": false,
+        "show-special": false,
+        "persistent-workspaces": {
+            "*": 9
+        },
+        "format-icons": {
+            "active": "●",
+            "default": "○"
+        }
+    },
+
+    "clock": {
+        "format": "{:%H:%M}",
+        "tooltip-format": "{:%A, %d %B %Y}"
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-muted": "󰝟 muted",
+        "format-icons": {
+            "default": ["󰕿", "󰖀", "󰕾"]
+        },
+        "scroll-step": 5,
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-click-right": "pavucontrol"
+    },
+
+    "network": {
+        "format-wifi": "󰤨",
+        "format-disconnected": "󰤭",
+        "format-ethernet": "󰈀",
+        "tooltip-format": "{ifname}: {ipaddr}"
+    },
+
+    "battery": {
+        "format": "󰁹 {capacity}%",
+        "format-warning": "󰁾 {capacity}%",
+        "format-critical": "󰁺 {capacity}%",
+        "states": {
+            "warning": 20,
+            "critical": 10
+        },
+        "tooltip-format": "{capacity}% • {time}"
+    }
+}

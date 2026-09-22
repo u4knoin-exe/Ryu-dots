@@ -1,0 +1,61 @@
+* {
+    font-family: "Iosevka Nerd Font Mono", "Symbols Nerd Font Mono", monospace;
+    font-size: 13px;
+    font-weight: 500;
+    min-height: 0;
+}
+
+window#waybar {
+    background: transparent;
+    color: #eeeeee;
+}
+
+window#waybar > box {
+    background: rgba(12, 12, 15, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 0 10px;
+}
+
+#custom-arch {
+    font-family: "Symbols Nerd Font Mono";
+    font-size: 16px;
+    padding: 0 6px;
+}
+
+#workspaces button {
+    background: transparent;
+    color: rgba(255,255,255,0.35);
+    padding: 0 5px;
+    margin: 0 1px;
+    border: none;
+}
+
+#workspaces button.active {
+    color: #ffffff;
+}
+
+#workspaces button:hover {
+    background: transparent;
+    color: #ffffff;
+}
+
+#clock {
+    color: #ffffff;
+    font-weight: 600;
+    padding: 0 12px;
+}
+
+#pulseaudio,
+#network,
+#battery {
+    color: #dddddf;
+    padding: 0 7px;
+}
+
+tooltip {
+    background: #15151a;
+    color: #eeeeee;
+    border: 1px solid #303038;
+    border-radius: 10px;
+}
