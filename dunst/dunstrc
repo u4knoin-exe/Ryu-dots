@@ -2,27 +2,26 @@
     monitor = 0
     follow = mouse
 
-    width = 360
+    width = 370
     height = (0, 300)
     origin = top-right
-    offset = (14, 48)
+    offset = (14, 58)
 
     notification_limit = 5
-    gap_size = 8
+    gap_size = 7
 
-    padding = 14
-    horizontal_padding = 16
+    padding = 13
+    horizontal_padding = 15
     text_icon_padding = 10
 
     frame_width = 1
-    frame_color = "#303038"
+    frame_color = "#263039"
     separator_height = 0
-    corner_radius = 14
-    transparency = 8
+    corner_radius = 13
+    transparency = 7
 
-    font = JetBrainsMono Nerd Font 10
+    font = Iosevka Nerd Font 10
     line_height = 4
-
     format = "<b>%s</b>\n%b"
     markup = full
     alignment = left
@@ -43,19 +42,19 @@
     idle_threshold = 120
 
 [urgency_low]
-    background = "#111114"
-    foreground = "#b8b8c2"
-    frame_color = "#2a2a30"
+    background = "#0d1014"
+    foreground = "#aab4bf"
+    frame_color = "#202830"
     timeout = 4
 
 [urgency_normal]
-    background = "#111114"
-    foreground = "#eeeeee"
-    frame_color = "#3a3a42"
+    background = "#0d1014"
+    foreground = "#eef2f5"
+    frame_color = "#2b353e"
     timeout = 6
 
 [urgency_critical]
-    background = "#181114"
+    background = "#171014"
     foreground = "#ffffff"
-    frame_color = "#8f4650"
+    frame_color = "#874652"
     timeout = 0

@@ -1,60 +1,59 @@
 * {
-    color: #e8e8ec;
+    color: #e8edf2;
     background-color: transparent;
 }
 
 window {
-    background-color: #0b0b0f;
-    border-radius: 18px;
+    background-color: #090b0e;
+    border-radius: 16px;
 }
 
 headerbar {
-    background-color: #111116;
-    color: #eeeeee;
+    background-color: #0d1014;
+    color: #f4f7fa;
     border: none;
     box-shadow: none;
 }
 
 button {
-    color: #dddddf;
-    background-color: #15151a;
-    border: 1px solid #24242b;
-    border-radius: 12px;
-    padding: 6px;
+    color: #d9e0e7;
+    background-color: #11151a;
+    border: 1px solid #20262e;
+    border-radius: 10px;
+    padding: 7px;
 }
 
 button:hover {
-    color: #ffffff;
-    background-color: #1d1d24;
-    border-color: #363640;
+    background-color: #171d24;
+    border-color: #2c3640;
 }
 
 button:checked {
     color: #ffffff;
-    background-color: #202027;
-    border: 2px solid #8b8b96;
+    background-color: #111b21;
+    border: 2px solid #5d9eae;
 }
 
 entry,
 spinbutton,
 combobox {
     color: #eeeeee;
-    background-color: #15151a;
-    border: 1px solid #292930;
-    border-radius: 10px;
+    background-color: #101419;
+    border: 1px solid #252c34;
+    border-radius: 9px;
 }
 
 entry:focus,
 spinbutton:focus,
 combobox:focus {
-    border-color: #555560;
+    border-color: #5d9eae;
 }
 
 menu,
 popover {
     color: #eeeeee;
-    background-color: #15151a;
-    border: 1px solid #292930;
+    background-color: #101419;
+    border: 1px solid #252c34;
 }
 
 scrollbar {
@@ -62,23 +61,19 @@ scrollbar {
 }
 
 scrollbar slider {
-    background-color: #34343c;
-    border-radius: 8px;
+    background-color: #303841;
+    border-radius: 7px;
     min-width: 6px;
     min-height: 6px;
 }
 
-scrollbar slider:hover {
-    background-color: #50505a;
-}
-
 label {
-    color: #dddddf;
+    color: #d8dee5;
 }
 
 tooltip {
-    background-color: #15151a;
+    background-color: #101419;
     color: #eeeeee;
-    border: 1px solid #303038;
+    border: 1px solid #252c34;
     border-radius: 8px;
 }

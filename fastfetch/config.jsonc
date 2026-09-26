@@ -5,7 +5,7 @@
         "type": "builtin",
         "source": "arch",
         "padding": {
-            "right": 4
+            "right": 3
         },
         "color": {
             "1": "cyan",
@@ -18,12 +18,10 @@
     "display": {
         "separator": "  ",
         "brightColor": true,
-
         "key": {
             "type": "string",
-            "width": 9
+            "width": 8
         },
-
         "color": {
             "keys": "cyan",
             "title": "blue"
@@ -35,69 +33,39 @@
             "type": "title",
             "format": "{user-name}@{host-name}"
         },
-
         {
             "type": "separator",
             "string": "─"
         },
-
         {
             "type": "os",
             "key": "OS",
             "format": "{name}"
         },
-
-        {
-            "type": "kernel",
-            "key": "Kernel",
-            "format": "{release}"
-        },
-
-        {
-            "type": "uptime",
-            "key": "Up",
-            "format": "{days}d {hours}h {minutes}m"
-        },
-
         {
             "type": "wm",
             "key": "WM",
             "format": "{pretty-name}"
         },
-
         {
             "type": "terminal",
             "key": "Term",
             "format": "{pretty-name}"
         },
-
         {
-            "type": "shell",
-            "key": "Shell",
-            "format": "{pretty-name}"
+            "type": "kernel",
+            "key": "Kernel",
+            "format": "{release}"
         },
-
         {
             "type": "cpu",
             "key": "CPU",
             "format": "{name}"
         },
-
-        {
-            "type": "gpu",
-            "key": "GPU",
-            "format": "{name}"
-        },
-
         {
             "type": "memory",
             "key": "RAM",
             "format": "{used} / {total}"
-        },
-
-        {
-            "type": "separator",
-            "string": "─"
         }
     ]
 }

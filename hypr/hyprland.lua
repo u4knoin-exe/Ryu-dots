@@ -53,8 +53,8 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
     hl.exec_cmd("dunst")
     hl.exec_cmd("hypridle")
-    hl.exec_cmd("awww-daemon")
-    hl.exec_cmd("sleep 2 && awww img ~/Pictures/Wallpapers/wallhaven-rq67k1.jpg && ~/.local/bin/wallpaper-theme ~/Pictures/Wallpapers/wallhaven-rq67k1.jpg")
+    hl.exec_cmd("pgrep -x awww-daemon >/dev/null 2>&1 || awww-daemon")
+    hl.exec_cmd("sleep 2; W=$(find \"$HOME/Pictures/Wallpapers\" -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \\) 2>/dev/null | head -n1); [ -z \"$W\" ] || awww img \"$W\"")
 end)
 
 -------------------------------

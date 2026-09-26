@@ -2,87 +2,111 @@
     "layer": "top",
     "position": "top",
     "passthrough": false,
-    "height": 34,
-    "margin-top": 8,
-    "margin-left": 400,
-    "margin-right": 400,
+    "height": 42,
+    "margin-top": 10,
+    "margin-left": 14,
+    "margin-right": 14,
+
     "modules-left": [
-        "custom/cachyos",
+        "custom/arch",
         "hyprland/workspaces"
     ],
+
     "modules-center": [
         "clock",
-        "custom/music",
-        "custom/cava"
+        "custom/music"
     ],
+
     "modules-right": [
         "tray",
         "custom/volume",
         "network",
         "battery"
     ],
-    "custom/cachyos": {
-        "format": "\uf313",
-        "tooltip": "CachyOS"
+
+    "custom/arch": {
+        "format": "",
+        "tooltip": false
     },
-    "tray": {
-        "icon-size": 16,
-        "spacing": 8
-    },
+
     "hyprland/workspaces": {
         "format": "{icon}",
         "all-outputs": false,
         "show-special": false,
+        "disable-scroll": false,
         "persistent-workspaces": {
             "*": 9
         },
         "format-icons": {
-            "active": "\u25cf",
-            "default": "\u25cb"
+            "active": "●",
+            "default": "○",
+            "urgent": "◆"
         }
     },
+
     "clock": {
         "format": "{:%H:%M}",
-        "tooltip-format": "{:%A, %d %B %Y}"
+        "tooltip-format": "<b>{:%A}</b>\n{:%d %B %Y}",
+        "interval": 1
     },
+
     "custom/music": {
-        "format": "\udb80\udf88 {}",
-        "exec": "playerctl metadata --format '{{ artist }} \u2014 {{ title }}' 2>/dev/null",
+        "format": "󰎆  {}",
+        "exec": "playerctl metadata --format '{{ artist }}  ·  {{ title }}' 2>/dev/null || true",
         "interval": 2,
-        "max-length": 35,
+        "max-length": 34,
         "on-click": "playerctl play-pause",
         "on-scroll-up": "playerctl next",
         "on-scroll-down": "playerctl previous",
-        "tooltip": true,
-        "tooltip-format": "Click: Play/Pause \u2022 Scroll: Previous/Next"
+        "tooltip": false
     },
+
+    "tray": {
+        "icon-size": 15,
+        "spacing": 7
+    },
+
+    "custom/volume": {
+        "format": "{}",
+        "exec": "wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{if ($3==\"[MUTED]\") print \"󰖁  MUTED\"; else printf \"󰕾  %d%%\\n\", $2*100}'",
+        "interval": 1,
+        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+        "on-scroll-up": "wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 5%+",
+        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
+        "tooltip": false
+    },
+
     "network": {
-        "format-wifi": "\udb81\udda9",
-        "format-disconnected": "\udb81\uddaa",
-        "format-ethernet": "\udb80\ude00",
-        "format-disabled": "\udb81\uddaa",
-        "tooltip-format": "{ifname}: {ipaddr}",
-        "on-click": "~/.local/bin/wifi-menu"
+        "format-wifi": "󰤨",
+        "format-ethernet": "󰈀  {ifname}",
+        "format-disconnected": "󰤭  offline",
+        "format-disabled": "󰤭  disabled",
+        "tooltip-format": "{ifname}\n{ipaddr}",
+        "max-length": 20
     },
+
     "battery": {
-        "on-click": "~/.local/bin/battery-menu",
-        "format": "\udb80\udc79 {capacity}%",
-        "format-warning": "\udb80\udc7a {capacity}%",
-        "format-critical": "\udb80\udc78 {capacity}%",
+        "format": "{icon}  {capacity}%",
+        "format-icons": [
+            "󰂎",
+            "󰁺",
+            "󰁻",
+            "󰁼",
+            "󰁽",
+            "󰁾",
+            "󰁿",
+            "󰂀",
+            "󰂁",
+            "󰂂",
+            "󰁹"
+        ],
+        "format-charging": "󰂄  {capacity}%",
+        "format-warning": "󰂃  {capacity}%",
+        "format-critical": "󰂃  {capacity}%",
         "states": {
             "warning": 20,
             "critical": 10
         },
-        "tooltip-format": "{capacity}% \u2022 {time}"
-    },
-    "custom/volume": {
-        "format": "{}",
-        "exec": "wpctl get-volume @DEFAULT_AUDIO_SINK@ | awk '{if ($3==\"[MUTED]\") print \"\udb81\udd81 MUTED\"; else printf \"\udb81\udd7e %d%%\\n\", $2*100}'",
-        "interval": 1,
-        "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
-        "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
-        "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-",
-        "tooltip": true,
-        "tooltip-format": "Left click: Mute \u2022 Scroll: Volume"
+        "tooltip-format": "{capacity}%  ·  {time}"
     }
 }
