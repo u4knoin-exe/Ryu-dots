@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Rofi Wi-Fi picker (nmcli). Known networks connect directly, new secured ones ask for a password.
+nmcli radio wifi on
+nmcli device wifi rescan 2>/dev/null; sleep 1
+
+list=$(nmcli -t -f SSID,SIGNAL,SECURITY device wifi list | awk -F: '$1!="" && !seen[$1]++ {printf "%s  (%s%%) %s\n",$1,$2,($3==""?"open":"")}')
+choice=$(printf '%s\n' "$list" | rofi -dmenu -i -p "wifi" -theme-str 'window {width: 460px;}')
+[ -z "$choice" ] && exit 0
+ssid=$(sed -E 's/  \([0-9]+%\).*$//' <<<"$choice")
+
+if nmcli -t -f NAME connection show | grep -Fxq "$ssid"; then
+  nmcli connection up id "$ssid" && notify-send "Wi-Fi" "Connected: $ssid" && exit 0
+fi
+if grep -q "open" <<<"$choice"; then
+  nmcli device wifi connect "$ssid"
+else
+  pass=$(rofi -dmenu -password -p "password" -theme-str 'window {width: 460px;}')
+  [ -z "$pass" ] && exit 0
+  nmcli device wifi connect "$ssid" password "$pass"
+fi && notify-send "Wi-Fi" "Connected: $ssid" || notify-send "Wi-Fi" "Failed: $ssid"

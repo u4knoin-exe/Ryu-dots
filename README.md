@@ -1,67 +1,51 @@
-# u4knoin's dotfiles
+# Ryu-dots
 
-My personal Linux rice/configuration focused on a dark, minimal Hyprland setup.
+Minimal monochrome glass Hyprland rice. Hyprland 0.55+ **Lua** config.
 
-## Includes
+## Install
 
-- Hyprland
-- Waybar
-- Kitty
-- Rofi
-- Fastfetch
-- Starship
-- Dunst
-- Hyprlock
-- Hypridle
-- Gammastep
-- awww
-- Waypaper
-- Thunar
-- Zed
-- btop
-- Custom scripts
+```sh
+git clone git@github.com:u4knoin-exe/Ryu-dots.git ~/Ryu-dots
+cd ~/Ryu-dots && ./install.sh
+```
 
-## Supported distros
+Arch / CachyOS: installs packages (pacman + AUR helper), backs up old configs to `~/ryu-backup-*.tar.gz`, then deploys.
+Other distros / NixOS: packages are skipped (list is printed), configs still deploy.
 
-The installer detects the available package manager automatically:
+## How it works
 
-- NixOS
-- Arch Linux
-- Fedora
-- Debian / Ubuntu
+| Folder | Goes to | Notes |
+|---|---|---|
+| `config/` | `~/.config/` | files symlinked, `*.tpl` rendered |
+| `home/` | `~/` | dotfiles |
+| `bin/` | `~/.local/bin/` | scripts |
+| `theme/palette.env` | | **single source of colors and font** |
 
-> NixOS users: the installer does not modify `/etc/nixos` or install packages imperatively. Manage system packages through your Nix configuration.
+Change a color in `theme/palette.env`, run `./theme/apply.sh`. Hyprland, Waybar, Kitty, Rofi, Dunst, Hyprlock and Starship all follow.
 
-## Dependencies
+## Hyprland modules (`config/hypr/`)
 
-The installer can install the required packages automatically.
+`env` `monitors` `look` `input` `binds` `rules` `autostart`, plus generated `colors.lua`.
 
-Main dependencies include:
+## Keybinds
 
-- Hyprland
-- Waybar
-- Kitty
-- Rofi
-- Fastfetch
-- Starship
-- Playerctl
-- Brightnessctl
-- WirePlumber
-- NetworkManager
-- Dunst
-- wl-clipboard
-- Cliphist
-- Grim
-- Slurp
-- Hyprlock
-- Hypridle
-- Gammastep
+| Key | Action |
+|---|---|
+| `SUPER + Return` | Kitty |
+| `SUPER + Space` | Rofi launcher |
+| `SUPER + SHIFT + W` | Wi-Fi menu |
+| `SUPER + V` | Clipboard history |
+| `SUPER + E` | Thunar |
+| `SUPER + L` | Lock |
+| `SUPER + Q` | Close window |
+| `SUPER + SHIFT + F` | Toggle float |
+| `SUPER + 1..9` | Workspace (add `SHIFT` to move window) |
+| `SUPER + W` | Wallpaper picker (`+ CTRL` random) |
+| `SUPER + N` | Night light toggle |
+| `SUPER + S` | Scratchpad |
+| `Print` / `SHIFT + Print` | Screenshot to clipboard / file |
 
-## Installation
+## Troubleshooting
 
-Clone the repository:
-
-```bash
-git clone git@github.com:u4knoin-exe/Ryu-dots.git ~/dotfiles
-cd ~/dotfiles
-./install.sh
+- Lua API names: `/usr/share/hypr/stubs/hl.meta.lua` is the ground truth for your Hyprland version.
+- Kitty opaque: keep `background_opacity` after any `include`, and make sure no window rule forces `opaque`.

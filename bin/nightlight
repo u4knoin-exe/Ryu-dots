@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Super+N: force warm screen on/off. The 21:00 / 07:00 schedule still applies by itself.
+state="${XDG_RUNTIME_DIR:-/tmp}/nightlight-on"
+if [ -f "$state" ]; then
+  rm -f "$state"
+  hyprctl hyprsunset identity >/dev/null
+  notify-send "Night light" "off"
+else
+  touch "$state"
+  hyprctl hyprsunset temperature 3500 >/dev/null
+  notify-send "Night light" "on (3500K)"
+fi

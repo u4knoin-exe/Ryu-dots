@@ -1,3 +1,2 @@
-backups/
-.dotfiles-backup/
-gh/
+*.bak
+.DS_Store

@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# ryu-wall: stylised wallpaper picker (rofi grid + awww)
+#   ryu-wall            pick from grid
+#   ryu-wall --random   random wallpaper
+#   ryu-wall --restore  re-apply last wallpaper (used at login)
+WALL_DIR="${WALL_DIR:-$HOME/Pictures/Wallpapers}"
+CACHE="$HOME/.cache/ryu-wall"
+THUMBS="$CACHE/thumbs"
+mkdir -p "$THUMBS" "$WALL_DIR"
+
+ensure_daemon() { awww query >/dev/null 2>&1 || { (setsid awww-daemon >/dev/null 2>&1 &); sleep 1; }; }
+
+apply() {
+  ensure_daemon
+  awww img "$1" --transition-type fade --transition-duration 0.6
+  printf '%s\n' "$1" > "$CACHE/current"
+}
+
+mapfile -t files < <(find "$WALL_DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | sort)
+
+case "${1:-}" in
+  --restore)
+    [ -f "$CACHE/current" ] && [ -f "$(cat "$CACHE/current")" ] && apply "$(cat "$CACHE/current")"
+    exit 0 ;;
+  --random)
+    [ ${#files[@]} -eq 0 ] && { notify-send "ryu-wall" "No images in $WALL_DIR"; exit 1; }
+    apply "${files[RANDOM % ${#files[@]}]}"
+    exit 0 ;;
+esac
+
+if [ ${#files[@]} -eq 0 ]; then
+  notify-send "ryu-wall" "Put images in $WALL_DIR"
+  exit 1
+fi
+
+IM=$(command -v magick || command -v convert)
+
+entries() {
+  local f key t name
+  for f in "${files[@]}"; do
+    key=$(printf '%s' "$f" | md5sum | cut -c1-12)
+    t="$THUMBS/$key.png"
+    [ -f "$t" ] || "$IM" "$f" -resize 480x300^ -gravity center -extent 480x300 "$t" 2>/dev/null || t="$f"
+    name=$(basename "${f%.*}")
+    printf '%s\0icon\x1f%s\n' "$name" "$t"
+  done
+}
+
+idx=$(entries | rofi -dmenu -i -show-icons -format i -p "wall" -theme ~/.config/rofi/wall.rasi)
+[ -z "$idx" ] && exit 0
+apply "${files[$idx]}"
