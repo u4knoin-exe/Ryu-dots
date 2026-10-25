@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# ryu-shot <name> [delay]: screenshot straight into assets/preview for the README.
+#   ryu-shot desktop            (3s delay: arrange your windows)
+#   ryu-shot launcher 5         (open the launcher during the delay)
+#   ryu-shot wallpaper 5        (open the wallpaper picker during the delay)
+#   ryu-shot lock               (locks the screen, captures it, unlock normally)
+REPO="${RYU_REPO:-$HOME/Ryu-dots}"
+name="${1:-desktop}"; delay="${2:-3}"
+out="$REPO/assets/preview/$name.png"
+mkdir -p "$(dirname "$out")"
+notify-send "ryu-shot" "$name in ${delay}s" 2>/dev/null
+if [ "$name" = lock ]; then
+  (sleep "$delay"; grim "$out") &
+  hyprlock
+  wait
+else
+  sleep "$delay"; grim "$out"
+fi
+notify-send "ryu-shot" "saved $name.png" 2>/dev/null
+echo "$out"
