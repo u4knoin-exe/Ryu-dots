@@ -1,3 +1,4 @@
+export PATH="$HOME/.local/bin:$PATH"
 [[ $- != *i* ]] && return
 alias ls='ls --color=auto'
 alias ll='ls -lah'
