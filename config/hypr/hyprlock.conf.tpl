@@ -1,3 +1,4 @@
+# Ryu-dots lockscreen: just a clock and a line. Colors from theme/palette.env.
 general {
     hide_cursor = true
     ignore_empty_input = true

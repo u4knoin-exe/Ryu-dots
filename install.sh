@@ -24,7 +24,7 @@ PKGS_ARCH=(hyprland hyprlock hypridle hyprsunset xdg-desktop-portal-hyprland
   waybar kitty rofi dunst libnotify thunar fastfetch starship btop
   playerctl brightnessctl wireplumber networkmanager
   wl-clipboard cliphist grim slurp imagemagick swaybg
-  ttf-jetbrains-mono-nerd awww)
+  ttf-jetbrains-mono-nerd ttf-iosevka-nerd awww)
 PKGS_FEDORA=(hyprland hyprlock hypridle hyprsunset xdg-desktop-portal-hyprland
   waybar kitty dunst libnotify Thunar fastfetch starship btop
   playerctl brightnessctl wireplumber NetworkManager
@@ -179,11 +179,14 @@ pkg_install() { # generic: used by extras
     *) MISSING+=("$@") ;;
   esac
 }
-nerd_font_fallback() {
-  fc-list 2>/dev/null | grep -qi 'JetBrainsMono.*Nerd' && return 0
-  info "installing JetBrainsMono Nerd Font (user)"
-  run bash -c 'mkdir -p ~/.local/share/fonts/JetBrainsMonoNerd && curl -fL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.tar.xz | tar -xJ -C ~/.local/share/fonts/JetBrainsMonoNerd && fc-cache -f' \
-    || MISSING+=("JetBrainsMono-Nerd-Font")
+nerd_font_fallback() { # distros without Nerd Font packages: user-level download
+  local f
+  for f in JetBrainsMono Iosevka; do
+    fc-list 2>/dev/null | grep -qi "$f.*Nerd" && continue
+    info "installing $f Nerd Font (user)"
+    run bash -c "mkdir -p ~/.local/share/fonts/${f}Nerd && curl -fL https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${f}.tar.xz | tar -xJ -C ~/.local/share/fonts/${f}Nerd && fc-cache -f" \
+      || MISSING+=("$f-Nerd-Font")
+  done
   return 0
 }
 
@@ -229,7 +232,7 @@ install_core() {
   return 0
 }
 if [ "$DO_PKGS" -eq 1 ]; then install_core; ok "core step done"
-else info "skipped. Needed: hyprland hyprlock hypridle hyprsunset waybar kitty rofi dunst thunar fastfetch starship btop playerctl brightnessctl wireplumber networkmanager wl-clipboard cliphist grim slurp imagemagick swaybg libnotify, JetBrainsMono Nerd Font, Bibata cursor"; fi
+else info "skipped. Needed: hyprland hyprlock hypridle hyprsunset waybar kitty rofi dunst thunar fastfetch starship btop playerctl brightnessctl wireplumber networkmanager wl-clipboard cliphist grim slurp imagemagick swaybg libnotify, JetBrainsMono + Iosevka Nerd Fonts, Bibata cursor"; fi
 
 # ---------- 3 extras ----------
 step "Extras"

@@ -1,4 +1,4 @@
-font_family      {{font}}
+font_family      {{kitty_font}}
 font_size        {{font_size}}
 window_padding_width 10
 confirm_os_window_close 0
