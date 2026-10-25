@@ -1,5 +1,5 @@
 hl.on("hyprland.start", function()
-  hl.exec_cmd("awww-daemon")
+  hl.exec_cmd("command -v awww-daemon >/dev/null && awww-daemon")
   hl.exec_cmd("sleep 1 && ~/.local/bin/ryu-wall --restore")
   hl.exec_cmd("waybar")
   hl.exec_cmd("dunst")

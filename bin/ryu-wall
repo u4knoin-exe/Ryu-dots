@@ -11,8 +11,14 @@ mkdir -p "$THUMBS" "$WALL_DIR"
 ensure_daemon() { awww query >/dev/null 2>&1 || { (setsid awww-daemon >/dev/null 2>&1 &); sleep 1; }; }
 
 apply() {
-  ensure_daemon
-  awww img "$1" --transition-type fade --transition-duration 0.6
+  if command -v awww >/dev/null 2>&1; then
+    ensure_daemon
+    awww img "$1" --transition-type fade --transition-duration 0.6
+  elif command -v swaybg >/dev/null 2>&1; then
+    pkill -x swaybg 2>/dev/null; (setsid swaybg -i "$1" -m fill >/dev/null 2>&1 &)
+  else
+    notify-send "ryu-wall" "install awww or swaybg"; return 1
+  fi
   printf '%s\n' "$1" > "$CACHE/current"
 }
 

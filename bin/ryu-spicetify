@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Sets up Spicetify + Marketplace on whatever Spotify you have installed.
+# Needs Spotify launched and logged in ONCE first (creates its prefs file).
+# Safe to re-run after a Spotify update.
+set -euo pipefail
+export PATH="$HOME/.spicetify:$PATH"
+say() { printf '  • %s\n' "$*"; }
+die() { printf '  ✘ %s\n' "$*" >&2; exit 1; }
+
+# 1. spicetify cli
+if ! command -v spicetify >/dev/null 2>&1; then
+  say "installing spicetify-cli"
+  curl -fsSL https://raw.githubusercontent.com/spicetify/cli/main/install.sh | sh
+fi
+command -v spicetify >/dev/null 2>&1 || die "spicetify not on PATH (add ~/.spicetify)"
+
+# 2. find Spotify
+dir=""
+for c in /opt/spotify \
+         "$HOME/.local/share/spotify-launcher/install/usr/share/spotify" \
+         /usr/share/spotify \
+         "$HOME"/.local/share/flatpak/app/com.spotify.Client/*/*/active/files/extra/share/spotify \
+         /var/lib/flatpak/app/com.spotify.Client/*/*/active/files/extra/share/spotify; do
+  [ -d "$c/Apps" ] && { dir="$c"; break; }
+done
+[ -n "$dir" ] || die "Spotify install not found. Install Spotify first."
+say "spotify: $dir"
+
+# 3. write permission (group-writable, not world-writable)
+if [ ! -w "$dir" ] || [ ! -w "$dir/Apps" ]; then
+  say "granting your group write access (sudo)"
+  sudo chgrp -R "$(id -gn)" "$dir"
+  sudo chmod -R g+w "$dir"
+fi
+
+# 4. prefs file
+prefs=""
+for c in "$HOME/.config/spotify/prefs" "$HOME/.var/app/com.spotify.Client/config/spotify/prefs"; do
+  [ -f "$c" ] && { prefs="$c"; break; }
+done
+if [ -z "$prefs" ]; then
+  echo "  ! Spotify prefs not found. Open Spotify, log in, close it, then run: ryu-spicetify" >&2
+  exit 2
+fi
+say "prefs: $prefs"
+
+# 5. configure + marketplace + apply
+spicetify >/dev/null 2>&1 || true            # bootstraps ~/.config/spicetify
+spicetify config spotify_path "$dir" prefs_path "$prefs"
+say "installing Marketplace"
+curl -fsSL https://raw.githubusercontent.com/spicetify/marketplace/main/resources/install.sh | sh
+spicetify backup apply || spicetify restore backup apply
+echo "  ✔ done. Open Spotify: Marketplace is in the sidebar."
