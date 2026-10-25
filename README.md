@@ -63,6 +63,7 @@ Old configs are backed up to `~/ryu-backup-*.tar.gz` and moved aside to `~/.conf
 | `Super + E` | Thunar |
 | `Super + L` | Lock |
 | `Super + Q` | Close window |
+| `Super + Shift + Q` | Power menu |
 | `Super + Shift + F` | Toggle float |
 | `Super + 1..9` | Workspace (add `Shift` to move window) |
 | `Super + S` | Scratchpad |

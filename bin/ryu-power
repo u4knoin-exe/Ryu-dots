@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# ryu-power: square rofi power menu (Super+Shift+Q)
+THEME="$HOME/.config/rofi/power.rasi"
+menu() { rofi -dmenu -i -no-custom -theme "$THEME" -p "$1"; }
+
+confirm() {
+  [ "$(printf 'no\nyes\n' | menu "$1")" = "yes" ]
+}
+
+choice=$(printf '%s\n' \
+  "   lock" \
+  "   logout" \
+  "   suspend" \
+  "   reboot" \
+  "   shutdown" | menu "power")
+
+case "$choice" in
+  *lock)     hyprlock ;;
+  *logout)   confirm "logout?"   && { command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'; } ;;
+  *suspend)  systemctl suspend ;;
+  *reboot)   confirm "reboot?"   && systemctl reboot ;;
+  *shutdown) confirm "shutdown?" && systemctl poweroff ;;
+esac
+exit 0

@@ -60,3 +60,6 @@ hl.bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("~/.local/bin/ryu-wall --random"))
 
 -- night light
 hl.bind(mod .. " + N", hl.dsp.exec_cmd("~/.local/bin/nightlight"))
+
+-- power menu
+hl.bind(mod .. " + SHIFT + Q", hl.dsp.exec_cmd("~/.local/bin/ryu-power"))
