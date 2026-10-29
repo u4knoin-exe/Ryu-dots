@@ -13,8 +13,14 @@
     "on-click": "activate",
     "persistent-workspaces": { "*": 5 }
   },
-  "clock": { "format": "{:%H:%M}", "format-alt": "{:%a %d %b %Y}", "tooltip": false },
+  "clock": {
+    "format": "{:%H:%M}",
+    "format-alt": "{:%a %d %b %Y}",
+    "on-click-right": "~/.local/bin/ryu-center",
+    "tooltip": false
+  },
   "network": {
+    "interval": 10,
     "format-wifi": "{essid}",
     "format-ethernet": "wired",
     "format-disconnected": "offline",
@@ -27,6 +33,7 @@
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
   },
   "battery": {
+    "interval": 60,
     "states": { "warning": 25, "critical": 12 },
     "format": "bat {capacity}%",
     "format-charging": "chg {capacity}%"

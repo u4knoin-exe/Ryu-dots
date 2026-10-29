@@ -7,8 +7,8 @@ general {
 background {
     monitor =
     path = screenshot
-    blur_passes = 4
-    blur_size = 10
+    blur_passes = 3
+    blur_size = 7
     noise = 0.02
     contrast = 0.85
     brightness = 0.35

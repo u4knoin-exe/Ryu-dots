@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# ryu-update: pull the latest Ryu-dots, re-render everything, check health. Your palette choice is kept.
+REPO="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+cd "$REPO" || exit 1
+if [ -n "$(git status --porcelain 2>/dev/null)" ]; then
+  echo "you have local changes; committing them first would be safest. Aborting." >&2
+  git status --short; exit 1
+fi
+git pull --ff-only || exit 1
+./theme/apply.sh
+"$REPO/bin/ryu-doctor"

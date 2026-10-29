@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# ryu-doctor: checks that the setup is healthy and tells you what to fix.
+REPO="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+bad=0; warn=0
+ok()   { printf '  \033[32m✔\033[0m %s\n' "$*"; }
+fail() { printf '  \033[31m✘\033[0m %s\n' "$*"; bad=$((bad+1)); }
+meh()  { printf '  \033[33m!\033[0m %s\n' "$*"; warn=$((warn+1)); }
+
+echo "commands"
+for c in Hyprland hyprctl hyprlock hypridle hyprsunset waybar kitty rofi dunst grim slurp wl-copy cliphist playerctl brightnessctl wpctl nmcli notify-send; do
+  command -v "$c" >/dev/null 2>&1 || command -v "${c,,}" >/dev/null 2>&1 && ok "$c" || fail "$c missing"
+done
+for c in satty wf-recorder hyprpicker starship fastfetch; do
+  command -v "$c" >/dev/null 2>&1 && ok "$c" || meh "$c missing (optional features)"
+done
+if command -v awww >/dev/null 2>&1 || command -v swaybg >/dev/null 2>&1; then ok "wallpaper backend"; else fail "no awww or swaybg"; fi
+if command -v magick >/dev/null 2>&1 || command -v convert >/dev/null 2>&1; then ok "imagemagick"; else fail "imagemagick missing (wallpaper thumbnails, tint)"; fi
+
+echo "fonts"
+fc-list 2>/dev/null | grep -qi 'JetBrainsMono.*Nerd' && ok "JetBrainsMono Nerd Font" || fail "JetBrainsMono Nerd Font missing"
+fc-list 2>/dev/null | grep -qi 'Iosevka.*Nerd' && ok "Iosevka Nerd Font" || meh "Iosevka Nerd Font missing (kitty falls back)"
+
+echo "hyprland"
+if command -v Hyprland >/dev/null 2>&1; then
+  v="$(Hyprland --version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+  if [ -n "$v" ] && [ "$(printf '0.55.0\n%s\n' "$v" | sort -V | head -1)" = "0.55.0" ]; then ok "version $v (Lua config supported)"; else fail "version ${v:-?} is older than 0.55"; fi
+fi
+if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  e="$(hyprctl configerrors 2>/dev/null)"
+  if [ -z "$e" ]; then ok "no config errors"; else fail "config errors:"; printf '%s\n' "$e" | sed 's/^/      /'; fi
+else
+  meh "not inside a Hyprland session: skipped live checks"
+fi
+
+echo "running"
+if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  for p in waybar dunst hypridle hyprsunset; do pgrep -x "$p" >/dev/null && ok "$p" || fail "$p not running"; done
+  if pgrep -x awww-daemon >/dev/null || pgrep -x swaybg >/dev/null; then ok "wallpaper daemon"; else fail "wallpaper daemon not running"; fi
+  pgrep -f hyprpolkitagent >/dev/null && ok "polkit agent" || meh "polkit agent not running (admin prompts will fail)"
+fi
+
+echo "files"
+case ":$PATH:" in *":$HOME/.local/bin:"*) ok "local bin dir is on PATH" ;; *) fail "local bin dir is not on PATH (add it in .bashrc)" ;; esac
+unlinked=()
+for f in "$REPO"/bin/*; do
+  l="$HOME/.local/bin/$(basename "$f")"
+  [ "$(readlink -f "$l" 2>/dev/null)" = "$(readlink -f "$f")" ] || unlinked+=("$(basename "$f")")
+done
+if [ ${#unlinked[@]} -eq 0 ]; then ok "all scripts linked"; else fail "${#unlinked[@]} scripts not linked (run ./theme/apply.sh): ${unlinked[*]}"; fi
+"$REPO/theme/check.sh" >/dev/null 2>&1 && ok "templates and palettes" || fail "template check failed (./theme/check.sh)"
+
+echo
+if [ "$bad" -eq 0 ]; then printf 'healthy'; [ "$warn" -gt 0 ] && printf ' (%s optional items)' "$warn"; echo; else echo "$bad problem(s), $warn warning(s)"; fi
+exit $((bad > 0))

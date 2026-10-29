@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# ryu-bench [--save]: RAM used by the rice and startup times. Compares with the last saved run.
+LOG="$HOME/.cache/ryu-bench.log"
+mkdir -p "$(dirname "$LOG")"
+rss() { # MB of all processes with this exact name
+  ps -C "$1" -o rss= 2>/dev/null | awk '{s+=$1} END {printf "%d", s/1024}'
+}
+now_ms() { date +%s%3N; }
+
+printf '%-22s %6s\n' "process" "MB"
+total=0
+for p in Hyprland waybar dunst hypridle hyprsunset awww-daemon swaybg hyprpolkitagent wl-paste kitty; do
+  m="$(rss "$p")"; [ "${m:-0}" -gt 0 ] || continue
+  printf '%-22s %6s\n' "$p" "$m"; total=$((total + m))
+done
+used=$(awk '/MemTotal/ {t=$2} /MemAvailable/ {a=$2} END {printf "%d", (t-a)/1024}' /proc/meminfo)
+printf '%-22s %6s\n' "rice total" "$total"
+printf '%-22s %6s\n' "system in use" "$used"
+
+echo
+term_ms="n/a"
+s=$(now_ms); bash -ic exit >/dev/null 2>&1; e=$(now_ms); shell_ms="$((e - s))ms"
+printf '%-22s %8s\n' "interactive shell" "$shell_ms"
+if [ -n "${WAYLAND_DISPLAY:-}" ] && command -v kitty >/dev/null 2>&1; then
+  s=$(now_ms); kitty --single-instance=no -o close_on_child_death=yes -o confirm_os_window_close=0 sh -c true >/dev/null 2>&1; e=$(now_ms)
+  term_ms="$((e - s))ms"; printf '%-22s %8s\n' "kitty (cold, no reuse)" "$term_ms"
+fi
+
+if [ -f "$LOG" ]; then
+  prev="$(tail -1 "$LOG")"
+  echo; echo "last saved run: $prev"
+fi
+if [ "${1:-}" = "--save" ]; then
+  printf '%s rice=%sMB system=%sMB shell=%s kitty=%s\n' "$(date '+%F %H:%M')" "$total" "$used" "$shell_ms" "$term_ms" >> "$LOG"
+  echo "saved to $LOG"
+fi

@@ -3,7 +3,7 @@
 #   ./install.sh                         interactive
 #   ./install.sh --yes --all             everything, no questions (distro-hop mode)
 #   ./install.sh --dry-run               preview only, changes nothing
-#   ./install.sh --brave --spotify --flatpak     pick extras
+#   ./install.sh --brave --spotify --flatpak --sddm   pick extras (--all excludes --sddm)
 #   ./install.sh --no-pkgs | --no-backup | --no-extras | --uninstall
 set -Eeuo pipefail
 
@@ -12,9 +12,10 @@ CONF="${XDG_CONFIG_HOME:-$HOME/.config}"
 OSREL="${RYU_OS_RELEASE:-/etc/os-release}"
 STAMP="$(date +%Y%m%d-%H%M%S)"
 YES=0; DRY=0; DO_PKGS=1; DO_BACKUP=1; UNINSTALL=0
-BRAVE=ask; SPOTIFY=ask; FLATPAK=ask
+BRAVE=ask; SPOTIFY=ask; FLATPAK=ask; SDDM=ask
 STEP=0; TOTAL=6
 MANAGED_DIRS=(hypr waybar kitty rofi dunst)
+SHARED_DIRS=(gtk-3.0 gtk-4.0 btop fastfetch qt6ct zathura cava lazygit spicetify)   # backed up, never moved aside (they hold user data)
 MIN_HYPR="0.55.0"
 FAMILY=unknown; DISTRO_NAME="unknown"
 AUR_HELPER=""; MISSING=()
@@ -24,15 +25,23 @@ PKGS_ARCH=(hyprland hyprlock hypridle hyprsunset xdg-desktop-portal-hyprland
   waybar kitty rofi dunst libnotify thunar fastfetch starship btop
   playerctl brightnessctl wireplumber networkmanager
   wl-clipboard cliphist grim slurp imagemagick swaybg
-  ttf-jetbrains-mono-nerd ttf-iosevka-nerd awww)
+  ttf-jetbrains-mono-nerd ttf-iosevka-nerd awww
+  hyprpolkitagent satty wf-recorder hyprpicker
+  papirus-icon-theme gnome-themes-extra qt6ct
+  zathura zathura-pdf-mupdf cava lazygit bluez bluez-utils)
 PKGS_FEDORA=(hyprland hyprlock hypridle hyprsunset xdg-desktop-portal-hyprland
   waybar kitty dunst libnotify Thunar fastfetch starship btop
   playerctl brightnessctl wireplumber NetworkManager
-  wl-clipboard cliphist grim slurp ImageMagick swaybg)
+  wl-clipboard cliphist grim slurp ImageMagick swaybg
+  hyprpolkitagent satty wf-recorder hyprpicker
+  papirus-icon-theme gnome-themes-extra qt6ct
+  zathura zathura-pdf-mupdf cava lazygit bluez)
 PKGS_DEBIAN=(hyprland hyprlock hypridle xdg-desktop-portal-hyprland
   waybar kitty rofi dunst libnotify-bin thunar fastfetch btop
   playerctl brightnessctl wireplumber network-manager
-  wl-clipboard grim slurp imagemagick swaybg)
+  wl-clipboard grim slurp imagemagick swaybg
+  wf-recorder papirus-icon-theme gnome-themes-extra qt6ct
+  zathura zathura-pdf-poppler cava bluez)
 
 # ---------- ui ----------
 if [ -t 1 ] && command -v tput >/dev/null 2>&1 && [ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]; then
@@ -74,9 +83,10 @@ for a in "$@"; do
     --no-backup) DO_BACKUP=0 ;;
     --brave) BRAVE=yes ;;
     --spotify) SPOTIFY=yes ;;
+    --sddm) SDDM=yes ;;
     --flatpak) FLATPAK=yes ;;
     --all) BRAVE=yes; SPOTIFY=yes; FLATPAK=yes ;;
-    --no-extras) BRAVE=no; SPOTIFY=no; FLATPAK=no ;;
+    --no-extras) BRAVE=no; SPOTIFY=no; FLATPAK=no; SDDM=no ;;
     --uninstall) UNINSTALL=1 ;;
     -h|--help) usage ;;
     *) die "unknown option: $a (try --help)" ;;
@@ -147,11 +157,14 @@ ensure_aur_helper() {
   AUR_HELPER=paru
 }
 arch_install() {
-  local p repo=() aur=() flags=(--needed)
+  # two bulk queries (installed / available in repos) instead of one pacman call per package
+  local p repo=() aur=() flags=(--needed) installed avail
   [ "$YES" -eq 1 ] && flags+=(--noconfirm)
+  installed=" $(pacman -Qq 2>/dev/null | tr '\n' ' ') "
+  avail=" $(pacman -Slq 2>/dev/null | tr '\n' ' ') "
   for p in "$@"; do
-    pacman -Qq "$p" >/dev/null 2>&1 && continue
-    if pacman -Si "$p" >/dev/null 2>&1; then repo+=("$p"); else aur+=("$p"); fi
+    [[ "$installed" == *" $p "* ]] && continue
+    if [[ "$avail" == *" $p "* ]]; then repo+=("$p"); else aur+=("$p"); fi
   done
   if [ ${#repo[@]} -gt 0 ]; then run sudo pacman -S "${flags[@]}" "${repo[@]}"; fi
   if [ ${#aur[@]} -gt 0 ]; then
@@ -209,6 +222,9 @@ step "Core packages"
 install_core() {
   case "$FAMILY" in
     arch)
+      if [ "$DRY" -eq 0 ] && ! grep -q '^ParallelDownloads' /etc/pacman.conf 2>/dev/null; then
+        ask "enable parallel pacman downloads (faster installs)?" && sudo sed -i 's/^#\?ParallelDownloads.*/ParallelDownloads = 5/' /etc/pacman.conf
+      fi
       local list=("${PKGS_ARCH[@]}")
       pacman -Qq 2>/dev/null | grep -qi '^bibata' || list+=(bibata-cursor-theme-bin)
       info "checking ${#list[@]} packages"
@@ -218,8 +234,9 @@ install_core() {
       ask "enable COPR solopasha/hyprland (newest Hyprland stack) and install?" || { warn "skipped"; return 0; }
       run sudo dnf install -y dnf-plugins-core
       run sudo dnf copr enable -y solopasha/hyprland
-      local rofi=rofi; dnf info rofi-wayland >/dev/null 2>&1 && rofi=rofi-wayland
-      best_effort_install "${PKGS_FEDORA[@]}" "$rofi" ;;
+      local rofi_pkg="rofi"
+      if dnf info rofi-wayland >/dev/null 2>&1; then rofi_pkg="rofi-wayland"; fi
+      best_effort_install "${PKGS_FEDORA[@]}" "$rofi_pkg" ;;
     debian)
       ask "install what apt has?" || { warn "skipped"; return 0; }
       run sudo apt-get update
@@ -293,12 +310,22 @@ install_spotify() {
   fi
   return 0
 }
+install_sddm() {
+  if ! command -v sddm >/dev/null 2>&1; then warn "SDDM is not installed: skipped"; return 0; fi
+  chmod +x "$REPO/bin/ryu-sddm"
+  if [ "$DRY" -eq 1 ]; then info "(would preview and install the SDDM theme)"; return 0; fi
+  info "opening a preview window first (close it when done)"
+  "$REPO/bin/ryu-sddm" preview || warn "preview failed"
+  if ask "install the Ryu SDDM theme? (undo anytime: ryu-sddm remove)"; then "$REPO/bin/ryu-sddm" install; fi
+  return 0
+}
 if [ "$FAMILY" != arch ] && [ "$FAMILY" != fedora ] && [ "$FAMILY" != debian ]; then
   info "extras are not supported on this distro: skipped"
 else
   if want "Flatpak + Flathub" "$FLATPAK"; then ensure_flatpak; fi
   if want "Brave Origin browser" "$BRAVE"; then install_brave; fi
   if want "Spotify + Spicetify + Marketplace" "$SPOTIFY"; then install_spotify; fi
+  if want "Ryu login screen (SDDM theme, preview first)" "$SDDM"; then install_sddm; fi
   info "extras done"
 fi
 
@@ -307,6 +334,9 @@ step "Backup"
 backup() {
   local items=() d
   for d in "${MANAGED_DIRS[@]}"; do
+    if [ -d "$CONF/$d" ] && [ ! -L "$CONF/$d" ] && [ ! -e "$CONF/$d/.ryu-managed" ]; then items+=(".config/$d"); fi
+  done
+  for d in "${SHARED_DIRS[@]}"; do
     if [ -d "$CONF/$d" ] && [ ! -L "$CONF/$d" ] && [ ! -e "$CONF/$d/.ryu-managed" ]; then items+=(".config/$d"); fi
   done
   if [ -f "$CONF/starship.toml" ] && [ ! -L "$CONF/starship.toml" ] && ! grep -q 'generated by Ryu-dots' "$CONF/starship.toml"; then
@@ -331,13 +361,14 @@ if [ "$DO_BACKUP" -eq 1 ]; then backup; else info "skipped (--no-backup)"; fi
 step "Deploy configs"
 run chmod +x "$REPO"/bin/* "$REPO"/theme/apply.sh
 run "$REPO/theme/apply.sh"
-for d in "${MANAGED_DIRS[@]}"; do if [ "$DRY" -eq 0 ] && [ -d "$CONF/$d" ]; then touch "$CONF/$d/.ryu-managed"; fi; done
+for d in "${MANAGED_DIRS[@]}" "${SHARED_DIRS[@]}"; do if [ "$DRY" -eq 0 ] && [ -d "$CONF/$d" ]; then touch "$CONF/$d/.ryu-managed"; fi; done
 ok "linked and rendered (colors from theme/palette.env)"
 # your wallpapers + avatar travel with the repo
 run mkdir -p "$HOME/Pictures/Wallpapers"
 if compgen -G "$REPO/wallpapers/*.*" >/dev/null 2>&1; then
   for f in "$REPO"/wallpapers/*.*; do [ -e "$HOME/Pictures/Wallpapers/$(basename "$f")" ] || run cp "$f" "$HOME/Pictures/Wallpapers/"; done
   ok "wallpapers copied from repo"
+  run "$REPO/bin/ryu-wall" --cache
 fi
 if [ -f "$REPO/assets/face.png" ] && [ ! -e "$HOME/.face" ]; then run cp "$REPO/assets/face.png" "$HOME/.face"; ok "avatar installed (~/.face)"; fi
 
@@ -368,7 +399,10 @@ cat <<MSG
   Start:      log out, pick Hyprland   (or run: Hyprland)
   Recolor:    edit theme/palette.env, then ./theme/apply.sh
   Spotify:    ryu-spicetify   (after first login)
+  Health:     ryu-doctor   ·   Speed: ryu-bench --save   ·   Battery: Super+Shift+P
   Undo:       ./install.sh --uninstall
   Keys:       Super+Return term · Super+Space launcher · Super+W wallpapers
               Super+Shift+W wifi · Super+N night light · Super+L lock
+              Super+Shift+T theme · Super+Shift+A animations · Super+Shift+Q power
+              Super+/ all keybinds · Super+X control center · Super+Shift+L layout
 MSG

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# ryu-rec: select a region and record it; run again to stop. Saves to ~/Videos.
+dir="$HOME/Videos"; mkdir -p "$dir"
+if pgrep -x wf-recorder >/dev/null; then
+  pkill -INT -x wf-recorder
+  notify-send "recording" "saved to ~/Videos"
+  exit 0
+fi
+region="$(slurp)" || exit 0
+notify-send "recording" "started (same key stops)"
+wf-recorder -g "$region" -f "$dir/rec-$(date +%Y%m%d-%H%M%S).mp4"

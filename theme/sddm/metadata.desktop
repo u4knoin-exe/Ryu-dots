@@ -1,0 +1,10 @@
+[SddmGreeterTheme]
+Name=Ryu
+Description=Minimal monochrome login screen
+Author=u4knoin
+Version=1.0
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-Id=ryu
+Theme-API=2.0

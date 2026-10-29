@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# ryu-sddm preview | install | remove
+#   preview   render the theme and open it in a test window (no root, nothing changes)
+#   install   copy the theme to /usr/share/sddm/themes/ryu and enable it (sudo)
+#   remove    disable it again (sudo); your previous login screen comes back
+set -u
+REPO="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+SRC="$REPO/theme/sddm"
+PAL="$REPO/theme/palette.env"
+DEST=/usr/share/sddm/themes/ryu
+CONFD=/etc/sddm.conf.d/10-ryu.conf
+
+render() { # render theme into dir $1
+  local out="$1" sedf f rel bg ext
+  mkdir -p "$out"; sedf="$(mktemp)"
+  while IFS='=' read -r k v; do
+    [[ -z "$k" || "$k" == \#* ]] && continue
+    printf 's|{{%s}}|%s|g\n' "$k" "$v" >> "$sedf"
+  done < "$PAL"
+  bg=""; ext=""
+  if [ -f "$HOME/.cache/ryu-wall/current" ] && [ -f "$(cat "$HOME/.cache/ryu-wall/current")" ]; then
+    bg="$(cat "$HOME/.cache/ryu-wall/current")"; ext="${bg##*.}"
+    cp "$bg" "$out/background.$ext"
+  fi
+  printf 's|@BACKGROUND@|%s|g\n' "${bg:+background.$ext}" >> "$sedf"
+  for f in "$SRC"/*; do
+    rel="$(basename "$f")"
+    case "$rel" in
+      *.tpl) sed -f "$sedf" "$f" > "$out/${rel%.tpl}" ;;
+      *)     cp "$f" "$out/$rel" ;;
+    esac
+  done
+  rm -f "$sedf"
+}
+
+case "${1:-}" in
+  preview)
+    tmp="$(mktemp -d)"; render "$tmp"
+    g="$(command -v sddm-greeter-qt6 || command -v sddm-greeter)" || { echo "sddm greeter not found (install sddm)" >&2; exit 1; }
+    "$g" --test-mode --theme "$tmp" ;;
+  install)
+    tmp="$(mktemp -d)"; render "$tmp"
+    sudo rm -rf "$DEST" && sudo mkdir -p "$(dirname "$DEST")" && sudo cp -r "$tmp" "$DEST" || exit 1
+    sudo mkdir -p /etc/sddm.conf.d
+    printf '[Theme]\nCurrent=ryu\n' | sudo tee "$CONFD" >/dev/null
+    echo "installed. Takes effect at the next login screen. Undo: ryu-sddm remove" ;;
+  remove)
+    sudo rm -f "$CONFD"; sudo rm -rf "$DEST"
+    echo "removed. SDDM falls back to its previous theme." ;;
+  *) echo "usage: ryu-sddm preview|install|remove" >&2; exit 1 ;;
+esac

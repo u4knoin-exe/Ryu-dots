@@ -1,0 +1,4 @@
+[ColorScheme]
+active_colors=#ff{{fg}}, #ff{{surface}}, #ff{{overlay}}, #ff{{overlay}}, #ff{{bg}}, #ff{{overlay}}, #ff{{fg}}, #ff{{accent2}}, #ff{{fg}}, #ff{{bg}}, #ff{{bg}}, #ff000000, #ff{{accent}}, #ff{{bg}}, #ff{{accent2}}, #ff{{muted}}, #ff{{surface}}, #ff{{fg}}, #ff{{surface}}, #ff{{fg}}, #80{{muted}}
+inactive_colors=#ff{{fg}}, #ff{{surface}}, #ff{{overlay}}, #ff{{overlay}}, #ff{{bg}}, #ff{{overlay}}, #ff{{fg}}, #ff{{accent2}}, #ff{{fg}}, #ff{{bg}}, #ff{{bg}}, #ff000000, #ff{{accent_dim}}, #ff{{bg}}, #ff{{accent2}}, #ff{{muted}}, #ff{{surface}}, #ff{{fg}}, #ff{{surface}}, #ff{{fg}}, #80{{muted}}
+disabled_colors=#ff{{muted}}, #ff{{surface}}, #ff{{overlay}}, #ff{{overlay}}, #ff{{bg}}, #ff{{overlay}}, #ff{{muted}}, #ff{{accent2}}, #ff{{muted}}, #ff{{bg}}, #ff{{bg}}, #ff000000, #ff{{accent_dim}}, #ff{{bg}}, #ff{{muted}}, #ff{{muted}}, #ff{{surface}}, #ff{{muted}}, #ff{{surface}}, #ff{{muted}}, #80{{muted}}

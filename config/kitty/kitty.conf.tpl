@@ -5,6 +5,13 @@ confirm_os_window_close 0
 enable_audio_bell no
 cursor_shape beam
 
+# latency and idle cost
+repaint_delay 6
+input_delay 1
+sync_to_monitor yes
+allow_remote_control no
+scrollback_lines 3000
+
 # Glass: Hyprland does the blur, kitty only provides alpha.
 # Keep these AFTER any include line, themes can override them.
 background_opacity 0.62

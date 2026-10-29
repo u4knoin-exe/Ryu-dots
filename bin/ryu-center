@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+# ryu-center: control center. One menu with live state; pick an item to toggle or open it.
+BIN="$HOME/.local/bin"
+
+HYPR="$(dirname "$(readlink -f "$HOME/.config/hypr/animations.lua")")"
+REPO="$(cd "$HYPR/../.." 2>/dev/null && pwd)"
+PAL="$REPO/theme/palette.env"
+
+ssid="$(nmcli -t -f active,ssid dev wifi 2>/dev/null | grep '^yes' | cut -d: -f2 | head -1)"
+nl="off"; [ -f "${XDG_RUNTIME_DIR:-/tmp}/nightlight-on" ] && nl="on"
+dnd="off"; [ "$(dunstctl is-paused 2>/dev/null)" = "true" ] && dnd="on"
+anim="$(sed -nE 's/^local preset *= *"([a-z]+)".*/\1/p' "$HYPR/animations.lua" | head -1)"
+lay="$(sed -nE 's/^    layout *= *"([a-z]+)".*/\1/p' "$HYPR/look.lua" | head -1)"
+theme="$(sed -n 's/^theme=//p' "$PAL" 2>/dev/null | head -1)"
+vol="$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null | awk '{printf "%d%%", $2*100}')"
+
+items="wifi            ${ssid:-off}\n"
+bt=""
+if command -v bluetoothctl >/dev/null 2>&1; then
+  bt="off"; bluetoothctl show 2>/dev/null | grep -q 'Powered: yes' && bt="on"
+  items+="bluetooth       $bt\n"
+fi
+items+="night light     $nl\n"
+items+="do not disturb  $dnd\n"
+items+="volume          ${vol:-?}\n"
+items+="animations      ${anim:-?}\n"
+items+="layout          ${lay:-?}\n"
+items+="theme           ${theme:-?}\n"
+items+="wallpaper\n"
+items+="record screen\n"
+items+="power\n"
+
+pick="$(printf '%b' "$items" | rofi -dmenu -i -no-custom -p center -theme-str 'window {width: 420px;} listview {lines: 11;}')"
+case "$pick" in
+  wifi*)       "$BIN/wifi-menu" ;;
+  bluetooth*)  if [ "$bt" = on ]; then bluetoothctl power off; else bluetoothctl power on; fi ;;
+  night*)      "$BIN/nightlight" ;;
+  "do not"*)   dunstctl set-paused toggle ;;
+  volume*)     wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle ;;
+  animations*) "$BIN/ryu-anim" ;;
+  layout*)     "$BIN/ryu-layout" ;;
+  theme*)      "$BIN/ryu-theme" ;;
+  wallpaper*)  "$BIN/ryu-wall" ;;
+  record*)     "$BIN/ryu-rec" ;;
+  power*)      "$BIN/ryu-power" ;;
+esac
+exit 0

@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
-# ryu-wall: stylised wallpaper picker (rofi grid + awww)
+# ryu-wall: stylised wallpaper picker (rofi grid + awww / swaybg)
 #   ryu-wall            pick from grid
 #   ryu-wall --random   random wallpaper
 #   ryu-wall --restore  re-apply last wallpaper (used at login)
+#   ryu-wall --cache    build all thumbnails now (the first open is instant afterwards)
 WALL_DIR="${WALL_DIR:-$HOME/Pictures/Wallpapers}"
 CACHE="$HOME/.cache/ryu-wall"
 THUMBS="$CACHE/thumbs"
 mkdir -p "$THUMBS" "$WALL_DIR"
 
-ensure_daemon() { awww query >/dev/null 2>&1 || { (setsid awww-daemon >/dev/null 2>&1 &); sleep 1; }; }
+ensure_daemon() { awww query >/dev/null 2>&1 || { (setsid awww-daemon >/dev/null 2>&1 &); sleep 0.5; }; }
 
 apply() {
   if command -v awww >/dev/null 2>&1; then
@@ -20,35 +21,56 @@ apply() {
     notify-send "ryu-wall" "install awww or swaybg"; return 1
   fi
   printf '%s\n' "$1" > "$CACHE/current"
+  command -v ryu-theme >/dev/null 2>&1 && ryu-theme --retint-if-wall >/dev/null 2>&1
+  return 0
 }
+
+# --restore is on the login path: do nothing slow before it
+if [ "${1:-}" = "--restore" ]; then
+  cur="$(cat "$CACHE/current" 2>/dev/null)"
+  [ -f "$cur" ] && apply "$cur"
+  exit 0
+fi
 
 mapfile -t files < <(find "$WALL_DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | sort)
 
-case "${1:-}" in
-  --restore)
-    [ -f "$CACHE/current" ] && [ -f "$(cat "$CACHE/current")" ] && apply "$(cat "$CACHE/current")"
-    exit 0 ;;
-  --random)
-    [ ${#files[@]} -eq 0 ] && { notify-send "ryu-wall" "No images in $WALL_DIR"; exit 1; }
-    apply "${files[RANDOM % ${#files[@]}]}"
-    exit 0 ;;
-esac
+if [ "${1:-}" = "--random" ]; then
+  [ ${#files[@]} -eq 0 ] && { notify-send "ryu-wall" "No images in $WALL_DIR"; exit 1; }
+  apply "${files[RANDOM % ${#files[@]}]}"
+  exit 0
+fi
 
 if [ ${#files[@]} -eq 0 ]; then
   notify-send "ryu-wall" "Put images in $WALL_DIR"
   exit 1
 fi
 
-IM=$(command -v magick || command -v convert)
+# thumbnail path from the file path (pure bash, no process per file); regenerate when the image is newer
+thumb_of() {
+  local k="${1//[^A-Za-z0-9._-]/_}"
+  [ "${#k}" -gt 170 ] && k="${k: -170}"
+  THUMB="$THUMBS/$k.png"
+}
+
+IM="$(command -v magick || command -v convert)"
+todo=()
+for f in "${files[@]}"; do
+  thumb_of "$f"; t="$THUMB"
+  if [ ! -f "$t" ] || [ "$f" -nt "$t" ]; then todo+=("$f" "$t"); fi
+done
+if [ ${#todo[@]} -gt 0 ] && [ -n "$IM" ]; then
+  export IM
+  printf '%s\0' "${todo[@]}" | xargs -0 -n2 -P"$(nproc)" sh -c \
+    '"$IM" "$1" -thumbnail 480x300^ -gravity center -extent 480x300 "$2" 2>/dev/null || cp "$1" "$2"' _
+fi
+[ "${1:-}" = "--cache" ] && { echo "thumbnails ready (${#files[@]} images)"; exit 0; }
 
 entries() {
-  local f key t name
+  local f n
   for f in "${files[@]}"; do
-    key=$(printf '%s' "$f" | md5sum | cut -c1-12)
-    t="$THUMBS/$key.png"
-    [ -f "$t" ] || "$IM" "$f" -resize 480x300^ -gravity center -extent 480x300 "$t" 2>/dev/null || t="$f"
-    name=$(basename "${f%.*}")
-    printf '%s\0icon\x1f%s\n' "$name" "$t"
+    n="${f##*/}"; n="${n%.*}"
+    thumb_of "$f"
+    printf '%s\0icon\x1f%s\n' "$n" "$THUMB"
   done
 }
 

@@ -1,9 +1,4 @@
+-- One launcher. It starts the essentials first and defers the rest (see bin/ryu-session).
 hl.on("hyprland.start", function()
-  hl.exec_cmd("command -v awww-daemon >/dev/null && awww-daemon")
-  hl.exec_cmd("sleep 1 && ~/.local/bin/ryu-wall --restore")
-  hl.exec_cmd("waybar")
-  hl.exec_cmd("dunst")
-  hl.exec_cmd("hypridle")
-  hl.exec_cmd("hyprsunset")
-  hl.exec_cmd("wl-paste --watch cliphist store")
+  hl.exec_cmd("~/.local/bin/ryu-session")
 end)

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# ryu-keys: searchable keybind cheat sheet, built from the ` -- @ ` comments in binds.lua.
+F="$(readlink -f "$HOME/.config/hypr/binds.lua")"
+[ -f "$F" ] || exit 1
+{
+  sed -nE 's/^hl\.bind\(mod \.\. "([^"]+)".* -- @ (.+)$/SUPER\1\t\2/p' "$F"
+  sed -nE 's/^hl\.bind\("([^"]+)".* -- @ (.+)$/\1\t\2/p' "$F"
+  sed -nE 's/^-- keys: ([^|]+)\| (.+)$/\1\t\2/p' "$F"
+} | awk -F'\t' '{ k=$1; sub(/ +$/,"",k); printf "%-30s %s\n", k, $2 }' \
+  | rofi -dmenu -i -no-custom -p keys -theme-str 'window {width: 700px;} listview {lines: 14;}' >/dev/null
+exit 0

@@ -1,0 +1,20 @@
+[base]
+text               = {{fg}}
+subtext            = {{muted}}
+main               = {{bg}}
+main-elevated      = {{surface}}
+highlight          = {{overlay}}
+highlight-elevated = {{overlay}}
+sidebar            = {{surface}}
+player             = {{bg}}
+card               = {{surface}}
+shadow             = 000000
+selected-row       = {{fg}}
+button             = {{accent}}
+button-active      = {{accent2}}
+button-disabled    = {{accent_dim}}
+tab-active         = {{overlay}}
+notification       = {{surface}}
+notification-error = {{red}}
+equalizer          = {{accent}}
+misc               = {{overlay}}

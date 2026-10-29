@@ -14,6 +14,11 @@
     icon_position = left
     max_icon_size = 48
     format = "<b>%s</b>\n%b"
+    progress_bar = true
+    progress_bar_height = 8
+    progress_bar_frame_width = 1
+    progress_bar_min_width = 160
+    progress_bar_corner_radius = 0
 
 [urgency_low]
     background = "#{{surface}}d9"
@@ -30,3 +35,8 @@
     foreground = "#{{fg}}"
     frame_color = "#{{red}}"
     timeout = 0
+
+[osd]
+    stack_tag = "ryu-osd"
+    history_ignore = yes
+    timeout = 1

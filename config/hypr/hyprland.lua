@@ -4,6 +4,8 @@ require("colors")      -- generated from theme/palette.env
 require("env")
 require("monitors")
 require("look")
+require("animations")
+require("perf")
 require("input")
 require("binds")
 require("rules")

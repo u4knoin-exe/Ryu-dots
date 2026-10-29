@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# ryu-perf [on|off|toggle]: performance mode (no blur, shadows or animations). Handy on battery.
+F="$HOME/.config/hypr/perf.lua"
+cur="$(sed -nE 's/^local mode *= *"([a-z]+)".*/\1/p' "$F" | head -1)"
+case "${1:-toggle}" in
+  on)  new=performance ;;
+  off) new=normal ;;
+  toggle) if [ "$cur" = performance ]; then new=normal; else new=performance; fi ;;
+  *) echo "usage: ryu-perf [on|off|toggle]" >&2; exit 1 ;;
+esac
+sed -i --follow-symlinks -E "s/^(local mode *= *\")[a-z]+(\")/\1${new}\2/" "$F"
+hyprctl reload >/dev/null 2>&1
+notify-send "performance mode" "$new" 2>/dev/null
+echo "$new"

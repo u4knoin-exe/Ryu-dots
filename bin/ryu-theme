@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# ryu-theme [name]: switch palette (mono, amoled, light, your own in theme/palettes/, or "wall").
+#   ryu-theme wall              mono base + an accent tinted from the current wallpaper
+#   ryu-theme --retint-if-wall  re-tint only if the wall theme is active (ryu-wall calls this)
+# No argument opens a Rofi menu.
+set -u
+REPO="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+PAL="$REPO/theme/palette.env"
+CUR="$HOME/.cache/ryu-wall/current"
+
+setkey() { if grep -q "^$1=" "$PAL"; then sed -i -E "s|^$1=.*|$1=$2|" "$PAL"; else printf '%s=%s\n' "$1" "$2" >> "$PAL"; fi; }
+
+load_palette() {
+  local src="$REPO/theme/palettes/$1.env" k v
+  [ -f "$src" ] || return 1
+  while IFS='=' read -r k v; do
+    [[ -z "$k" || "$k" == \#* ]] && continue
+    setkey "$k" "$v"
+  done < "$src"
+}
+
+# most colorful pixel of the wallpaper -> muted accent, lighter accent2, darker accent_dim
+tint() {
+  local img IM rgb
+  img="$(cat "$CUR" 2>/dev/null)"
+  [ -f "$img" ] || { echo "no wallpaper selected yet (use ryu-wall first)" >&2; return 1; }
+  IM="$(command -v magick || command -v convert)" || { echo "imagemagick not found" >&2; return 1; }
+  rgb="$("$IM" "$img" -resize 120x120! -depth 8 -colors 12 -unique-colors txt:- 2>/dev/null \
+    | sed -nE 's/^[0-9]+,[0-9]+: .*#([0-9A-Fa-f]{6}).*/\1/p' \
+    | awk 'function h(x) { return (index("0123456789abcdef", substr(x,1,1)) - 1) * 16 + index("0123456789abcdef", substr(x,2,1)) - 1 }
+           { x = tolower($1); r = h(substr(x,1,2)); g = h(substr(x,3,2)); b = h(substr(x,5,2));
+             mx = r; mn = r; if (g > mx) mx = g; if (b > mx) mx = b; if (g < mn) mn = g; if (b < mn) mn = b;
+             if (mx < 70) next; sat = (mx - mn) / mx; if (sat < 0.22) next; sc = sat * mx;
+             if (sc > best) { best = sc; br = r; bg = g; bb = b } }
+         END { if (best > 0) print br, bg, bb }')"
+  [ -n "$rgb" ] || { echo "wallpaper has no usable color, keeping mono" >&2; return 1; }
+  # shellcheck disable=SC2086
+  set -- $rgb
+  awk -v r="$1" -v g="$2" -v b="$3" 'function mix(c,t,a){ return int(c*(1-a)+t*a+0.5) }
+    BEGIN {
+      printf "%02x%02x%02x %02x%02x%02x %02x%02x%02x\n",
+        mix(r,190,0.35), mix(g,190,0.35), mix(b,190,0.35),
+        mix(r,255,0.55), mix(g,255,0.55), mix(b,255,0.55),
+        int(r*0.5), int(g*0.5), int(b*0.5) }'
+}
+
+apply_wall() {
+  local out
+  out="$(tint)" || return 1
+  load_palette mono
+  # shellcheck disable=SC2086
+  set -- $out
+  setkey accent "$1"; setkey accent2 "$2"; setkey accent_dim "$3"; setkey theme wall
+  "$REPO/theme/apply.sh" >/dev/null
+  notify-send "theme" "wall tint #$1" 2>/dev/null
+  echo "theme: wall (accent #$1)"
+}
+
+case "${1:-}" in
+  --retint-if-wall)
+    [ "$(sed -n 's/^theme=//p' "$PAL" | head -1)" = wall ] && apply_wall
+    exit 0 ;;
+esac
+
+names="$(find "$REPO/theme/palettes" -name '*.env' -exec basename {} .env \; | sort; echo wall)"
+name="${1:-$(printf '%s\n' "$names" | rofi -dmenu -i -no-custom -theme "$HOME/.config/rofi/power.rasi" -p theme)}"
+[ -n "$name" ] || exit 0
+if [ "$name" = wall ]; then apply_wall; exit $?; fi
+load_palette "$name" || { echo "no such palette: $name" >&2; exit 1; }
+"$REPO/theme/apply.sh" >/dev/null
+notify-send "theme" "$name" 2>/dev/null
+echo "theme: $name"

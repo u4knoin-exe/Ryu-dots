@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# ryu-anim [snappy|smooth|off]: switch animation preset. No argument opens a menu.
+F="$HOME/.config/hypr/animations.lua"
+choice="${1:-$(printf 'snappy\nsmooth\noff\n' | rofi -dmenu -i -no-custom -theme "$HOME/.config/rofi/power.rasi" -p anim)}"
+case "$choice" in snappy|smooth|off) ;; *) exit 0 ;; esac
+sed -i --follow-symlinks -E "s/^(local preset *= *\")[a-z]+(\")/\1${choice}\2/" "$F"
+hyprctl reload >/dev/null 2>&1
+notify-send "animations" "$choice" 2>/dev/null
+exit 0
