@@ -3,7 +3,7 @@
 set -u
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 bad=0
-keys="$(sed -n 's/^\([a-z_0-9]*\)=.*/\1/p' "$REPO/theme/palette.env") home"
+keys="$(sed -n 's/^\([a-z_0-9]*\)=.*/\1/p' "$REPO/theme/palette.env" "$REPO/theme/defaults.env") home"
 while IFS= read -r -d '' f; do
   for k in $(grep -o '{{[a-z_0-9]*}}' "$f" | tr -d '{}' | sort -u); do
     grep -qx "$k" <<<"$(tr ' ' '\n' <<<"$keys")" || { echo "unknown key {{$k}} in ${f#"$REPO"/}"; bad=1; }

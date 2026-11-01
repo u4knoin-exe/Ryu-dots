@@ -4,14 +4,54 @@
   "height": 30,
   "margin": 0,
   "spacing": 0,
-  "modules-left": ["hyprland/workspaces"],
+  "modules-left": ["custom/ws1", "custom/ws2", "custom/ws3", "custom/ws4", "custom/ws5"],
   "modules-center": ["clock"],
   "modules-right": ["network", "wireplumber", "battery", "tray"],
 
-  "hyprland/workspaces": {
-    "format": "{id}",
-    "on-click": "activate",
-    "persistent-workspaces": { "*": 5 }
+  "custom/ws1": {
+    "exec": "~/.local/bin/ryu-ws 1",
+    "return-type": "json",
+    "format": "{}",
+    "signal": 8,
+    "interval": "once",
+    "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = 1 })'",
+    "tooltip": false
+  },
+  "custom/ws2": {
+    "exec": "~/.local/bin/ryu-ws 2",
+    "return-type": "json",
+    "format": "{}",
+    "signal": 8,
+    "interval": "once",
+    "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = 2 })'",
+    "tooltip": false
+  },
+  "custom/ws3": {
+    "exec": "~/.local/bin/ryu-ws 3",
+    "return-type": "json",
+    "format": "{}",
+    "signal": 8,
+    "interval": "once",
+    "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = 3 })'",
+    "tooltip": false
+  },
+  "custom/ws4": {
+    "exec": "~/.local/bin/ryu-ws 4",
+    "return-type": "json",
+    "format": "{}",
+    "signal": 8,
+    "interval": "once",
+    "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = 4 })'",
+    "tooltip": false
+  },
+  "custom/ws5": {
+    "exec": "~/.local/bin/ryu-ws 5",
+    "return-type": "json",
+    "format": "{}",
+    "signal": 8,
+    "interval": "once",
+    "on-click": "hyprctl dispatch 'hl.dsp.focus({ workspace = 5 })'",
+    "tooltip": false
   },
   "clock": {
     "format": "{:%H:%M}",

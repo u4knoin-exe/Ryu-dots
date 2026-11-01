@@ -9,22 +9,33 @@ SEDFILE="$(mktemp)"; trap 'rm -f "$SEDFILE"' EXIT
 
 pv() { sed -n "s/^$1=//p" "$PALETTE" | head -1; }
 
-while IFS='=' read -r k v; do
-  [[ -z "$k" || "$k" == \#* ]] && continue
-  printf 's|{{%s}}|%s|g\n' "$k" "$v" >> "$SEDFILE"
-done < "$PALETTE"
+# palette.env first (it wins), then defaults.env for any key it lacks. The "|| [ -n "$k" ]" keeps a last line without a newline.
+for src in "$PALETTE" "$REPO/theme/defaults.env"; do
+  [ -f "$src" ] || continue
+  while IFS='=' read -r k v || [ -n "$k" ]; do
+    [[ -z "$k" || "$k" == \#* ]] && continue
+    printf 's|{{%s}}|%s|g\n' "$k" "$v" >> "$SEDFILE"
+  done < "$src"
+done
 printf 's|{{home}}|%s|g\n' "$HOME" >> "$SEDFILE"
 
 deploy_tree() {
-  local src="$1" dst="$2" f rel out
+  local src="$1" dst="$2" f rel out tmp
   [ -d "$src" ] || return 0
   while IFS= read -r -d '' f; do
     rel="${f#"$src"/}"
     if [[ "$f" == *.tpl ]]; then
       out="$dst/${rel%.tpl}"
       mkdir -p "$(dirname "$out")"
-      rm -f "$out"
-      sed -f "$SEDFILE" "$f" > "$out"
+      # render to a temp file first: a template with an unknown {{key}} must never replace a working config
+      tmp="$(mktemp)"
+      sed -f "$SEDFILE" "$f" > "$tmp"
+      if grep -qE '\{\{[a-z_0-9]+\}\}' "$tmp"; then
+        echo "apply.sh: kept the old ${out#"$HOME"/}, unresolved: $(grep -oE '\{\{[a-z_0-9]+\}\}' "$tmp" | sort -u | tr '\n' ' ')" >&2
+        rm -f "$tmp"
+      else
+        rm -f "$out"; mv "$tmp" "$out"
+      fi
     else
       out="$dst/$rel"
       mkdir -p "$(dirname "$out")"

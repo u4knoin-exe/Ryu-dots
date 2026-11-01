@@ -13,10 +13,13 @@ CONFD=/etc/sddm.conf.d/10-ryu.conf
 render() { # render theme into dir $1
   local out="$1" sedf f rel bg ext
   mkdir -p "$out"; sedf="$(mktemp)"
-  while IFS='=' read -r k v; do
-    [[ -z "$k" || "$k" == \#* ]] && continue
-    printf 's|{{%s}}|%s|g\n' "$k" "$v" >> "$sedf"
-  done < "$PAL"
+  for src in "$PAL" "$REPO/theme/defaults.env"; do
+    [ -f "$src" ] || continue
+    while IFS='=' read -r k v || [ -n "$k" ]; do
+      [[ -z "$k" || "$k" == \#* ]] && continue
+      printf 's|{{%s}}|%s|g\n' "$k" "$v" >> "$sedf"
+    done < "$src"
+  done
   bg=""; ext=""
   if [ -f "$HOME/.cache/ryu-wall/current" ] && [ -f "$(cat "$HOME/.cache/ryu-wall/current")" ]; then
     bg="$(cat "$HOME/.cache/ryu-wall/current")"; ext="${bg##*.}"

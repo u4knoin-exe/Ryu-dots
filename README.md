@@ -219,7 +219,6 @@ Hyprland itself is already light; the wins here are in everything around it.
 | Terminal | `Super + Return` uses one shared kitty process: new windows open instantly and share memory; lower input latency settings |
 | Shell | starship's init is cached; fastfetch runs once per login, not in every terminal (`RYU_FETCH=always` to restore) |
 | Wallpaper picker | thumbnails cached and rebuilt in parallel only when an image changes; no process spawned per image |
-| Launcher | Rofi desktop-entry cache on |
 | Bar | Waybar wakes less often (network 10 s, battery 60 s) |
 | Installer | two bulk package queries instead of one per package |
 | Battery | `Super + Shift + P` toggles performance mode: no blur, shadows or animations |
@@ -239,6 +238,7 @@ ryu-update            # git pull, re-render, health check
 - **Blur missing on bar or launcher:** check layer names with `hyprctl layers`.
 - **Two bars or old styling:** the installer moves old folders to `~/.config/<name>.old-*`; check that nothing else autostarts a bar.
 - **Lockscreen preview:** run `hyprlock` inside the session.
+- **Workspace numbers in Waybar:** they are small custom buttons (`ryu-ws`, fed by `ryu-ws-events`) because Waybar's own workspace module cannot click-switch under Hyprland's Lua config in 0.15.0. They need `socat`; `ryu-doctor` checks it.
 - **Admin prompts do nothing:** check `systemctl --user status hyprpolkitagent`.
 - **GTK app still light:** restart the app; libadwaita reads settings at launch.
 - **Lint locally:** `shellcheck -x -S warning install.sh theme/*.sh bin/*` and `./theme/check.sh` (CI runs both).

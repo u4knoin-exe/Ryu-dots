@@ -22,7 +22,7 @@ AUR_HELPER=""; MISSING=()
 
 # ---------- package lists ----------
 PKGS_ARCH=(hyprland hyprlock hypridle hyprsunset xdg-desktop-portal-hyprland
-  waybar kitty rofi dunst libnotify thunar fastfetch starship btop
+  waybar kitty rofi dunst libnotify thunar fastfetch starship btop socat
   playerctl brightnessctl wireplumber networkmanager
   wl-clipboard cliphist grim slurp imagemagick swaybg
   ttf-jetbrains-mono-nerd ttf-iosevka-nerd awww
@@ -30,14 +30,14 @@ PKGS_ARCH=(hyprland hyprlock hypridle hyprsunset xdg-desktop-portal-hyprland
   papirus-icon-theme gnome-themes-extra qt6ct
   zathura zathura-pdf-mupdf cava lazygit bluez bluez-utils)
 PKGS_FEDORA=(hyprland hyprlock hypridle hyprsunset xdg-desktop-portal-hyprland
-  waybar kitty dunst libnotify Thunar fastfetch starship btop
+  waybar kitty dunst libnotify Thunar fastfetch starship btop socat
   playerctl brightnessctl wireplumber NetworkManager
   wl-clipboard cliphist grim slurp ImageMagick swaybg
   hyprpolkitagent satty wf-recorder hyprpicker
   papirus-icon-theme gnome-themes-extra qt6ct
   zathura zathura-pdf-mupdf cava lazygit bluez)
 PKGS_DEBIAN=(hyprland hyprlock hypridle xdg-desktop-portal-hyprland
-  waybar kitty rofi dunst libnotify-bin thunar fastfetch btop
+  waybar kitty rofi dunst libnotify-bin thunar fastfetch btop socat
   playerctl brightnessctl wireplumber network-manager
   wl-clipboard grim slurp imagemagick swaybg
   wf-recorder papirus-icon-theme gnome-themes-extra qt6ct
@@ -160,8 +160,8 @@ arch_install() {
   # two bulk queries (installed / available in repos) instead of one pacman call per package
   local p repo=() aur=() flags=(--needed) installed avail
   [ "$YES" -eq 1 ] && flags+=(--noconfirm)
-  installed=" $(pacman -Qq 2>/dev/null | tr '\n' ' ') "
-  avail=" $(pacman -Slq 2>/dev/null | tr '\n' ' ') "
+  installed=" $( { pacman -Qq 2>/dev/null || true; } | tr '\n' ' ') "
+  avail=" $( { pacman -Slq 2>/dev/null || true; } | tr '\n' ' ') "
   for p in "$@"; do
     [[ "$installed" == *" $p "* ]] && continue
     if [[ "$avail" == *" $p "* ]]; then repo+=("$p"); else aur+=("$p"); fi
