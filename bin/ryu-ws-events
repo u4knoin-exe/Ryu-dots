@@ -6,10 +6,10 @@ SOCK="${XDG_RUNTIME_DIR:-/tmp}/hypr/${HYPRLAND_INSTANCE_SIGNATURE:-}/.socket2.so
 
 update() {
   local active occupied new
-  active="$(hyprctl activeworkspace 2>/dev/null | awk '/^workspace ID/ {print $3; exit}')"
-  occupied="$(hyprctl workspaces 2>/dev/null | awk '/^workspace ID/ {id=$3} /windows:/ { if ($2 > 0) printf "%s ", id }')"
+  active="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id')"
+  occupied="$(hyprctl workspaces -j 2>/dev/null | jq -r '[.[] | select(.windows > 0) | .id] | join(" ")')"
   new="active=${active:-1}
-occupied=${occupied}"
+occupied=${occupied} "
   if [ "$new" != "$(cat "$STATE" 2>/dev/null)" ]; then
     printf '%s\n' "$new" > "$STATE"
     pkill -RTMIN+8 -x waybar 2>/dev/null
@@ -24,5 +24,5 @@ while true; do
       workspace*|createworkspace*|destroyworkspace*|openwindow*|closewindow*|movewindow*|moveworkspace*|focusedmon*) update ;;
     esac
   done
-  sleep 1   # reconnect if the socket dropped
+  sleep 1
 done
