@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# ryu-ws <n>: JSON for Waybar's workspace button n (class: active / occupied / empty). Cheap: reads a state file.
+# ryu-ws <n>: JSON for Waybar's workspace button n (class: active / occupied / empty).
+# Pure bash builtins: no process is spawned, so five buttons refresh instantly on every workspace change.
 n="${1:?usage: ryu-ws <n>}"
 STATE="${XDG_RUNTIME_DIR:-/tmp}/ryu-ws.state"
 active=1; occupied=""
 if [ -f "$STATE" ]; then
-  active="$(sed -n 's/^active=//p' "$STATE")"
-  occupied="$(sed -n 's/^occupied=//p' "$STATE")"
+  while IFS='=' read -r k v; do
+    case "$k" in active) active="$v" ;; occupied) occupied="$v" ;; esac
+  done < "$STATE"
 fi
 class="empty"
-case " $occupied " in *" $n "*) class="occupied" ;; esac
+[[ " $occupied " == *" $n "* ]] && class="occupied"
 [ "$n" = "$active" ] && class="active"
 printf '{"text":"%s","class":"%s"}\n' "$n" "$class"

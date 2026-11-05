@@ -1,8 +1,9 @@
 configuration {
-  modi: "drun,run,window";
+  modi: "drun,run";
   show-icons: true;
+  icon-theme: "{{icon_theme}}";
   display-drun: "";
   drun-display-format: "{name}";
-  font: "JetBrainsMono Nerd Font 11";
+  font: "{{font}} 11";
 }
 @theme "~/.config/rofi/ryu.rasi"

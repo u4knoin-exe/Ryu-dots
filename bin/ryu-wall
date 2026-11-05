@@ -1,12 +1,19 @@
 #!/usr/bin/env bash
-# ryu-wall: stylised wallpaper picker (rofi grid + awww / swaybg)
-#   ryu-wall            pick from grid
-#   ryu-wall --random   random wallpaper
-#   ryu-wall --restore  re-apply last wallpaper (used at login)
-#   ryu-wall --cache    build all thumbnails now (the first open is instant afterwards)
+# ryu-wall: wallpaper picker + manager (rofi film strip, awww / swaybg)
+#   ryu-wall                 pick from the strip (Enter apply, Alt+R random)
+#   ryu-wall --grid          pick from a grid instead
+#   ryu-wall --random        random wallpaper (never the current one)
+#   ryu-wall --next | --prev step through your wallpapers
+#   ryu-wall --auto 20       change every 20 minutes (remembered across logins)
+#   ryu-wall --auto off      stop auto-change
+#   ryu-wall --restore       re-apply the last wallpaper (used at login)
+#   ryu-wall --cache         build all thumbnails now
+#   ryu-wall --current       print the current wallpaper path
 WALL_DIR="${WALL_DIR:-$HOME/Pictures/Wallpapers}"
 CACHE="$HOME/.cache/ryu-wall"
 THUMBS="$CACHE/thumbs"
+AUTO="$CACHE/auto"
+PIDF="$CACHE/auto.pid"
 mkdir -p "$THUMBS" "$WALL_DIR"
 
 ensure_daemon() { awww query >/dev/null 2>&1 || { (setsid awww-daemon >/dev/null 2>&1 &); sleep 0.5; }; }
@@ -14,7 +21,10 @@ ensure_daemon() { awww query >/dev/null 2>&1 || { (setsid awww-daemon >/dev/null
 apply() {
   if command -v awww >/dev/null 2>&1; then
     ensure_daemon
-    awww img "$1" --transition-type fade --transition-duration 0.6
+    local trans=(grow outer wipe wave fade)
+    # fancy transition first; plain call as a fallback in case this awww build rejects a flag
+    awww img "$1" --transition-type "${trans[RANDOM % ${#trans[@]}]}" --transition-duration 1 --transition-fps 60 --transition-pos 0.5,0.5 2>/dev/null \
+      || awww img "$1"
   elif command -v swaybg >/dev/null 2>&1; then
     pkill -x swaybg 2>/dev/null; (setsid swaybg -i "$1" -m fill >/dev/null 2>&1 &)
   else
@@ -25,33 +35,60 @@ apply() {
   return 0
 }
 
-# --restore is on the login path: do nothing slow before it
+stop_auto() { [ -f "$PIDF" ] && kill "$(cat "$PIDF")" 2>/dev/null; rm -f "$PIDF"; }
+start_auto() {
+  [ -f "$PIDF" ] && kill -0 "$(cat "$PIDF")" 2>/dev/null && return 0
+  (setsid "$0" --auto-loop >/dev/null 2>&1 &)
+}
+
+# ---- login path: nothing slow here ----
 if [ "${1:-}" = "--restore" ]; then
   cur="$(cat "$CACHE/current" 2>/dev/null)"
   [ -f "$cur" ] && apply "$cur"
+  [ -f "$AUTO" ] && start_auto
   exit 0
 fi
+if [ "${1:-}" = "--auto-loop" ]; then
+  echo $$ > "$PIDF"
+  while [ -f "$AUTO" ]; do
+    sleep "$(( $(cat "$AUTO") * 60 ))"
+    [ -f "$AUTO" ] && "$0" --random
+  done
+  rm -f "$PIDF"; exit 0
+fi
+if [ "${1:-}" = "--auto" ]; then
+  case "${2:-}" in
+    off|0|"") rm -f "$AUTO"; stop_auto; notify-send "wallpaper" "auto-change off"; echo "auto-change off" ;;
+    *[!0-9]*) echo "usage: ryu-wall --auto <minutes>|off" >&2; exit 1 ;;
+    *) echo "$2" > "$AUTO"; stop_auto; start_auto; notify-send "wallpaper" "changing every $2 min"; echo "changing every $2 min" ;;
+  esac
+  exit 0
+fi
+[ "${1:-}" = "--current" ] && { cat "$CACHE/current" 2>/dev/null; exit 0; }
 
 mapfile -t files < <(find "$WALL_DIR" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | sort)
+n=${#files[@]}
+cur="$(cat "$CACHE/current" 2>/dev/null)"
+curidx=0
+for i in "${!files[@]}"; do [ "${files[i]}" = "$cur" ] && { curidx=$i; break; }; done
 
-if [ "${1:-}" = "--random" ]; then
-  [ ${#files[@]} -eq 0 ] && { notify-send "ryu-wall" "No images in $WALL_DIR"; exit 1; }
-  apply "${files[RANDOM % ${#files[@]}]}"
-  exit 0
-fi
+case "${1:-}" in
+  --random)
+    [ "$n" -eq 0 ] && { notify-send "ryu-wall" "No images in $WALL_DIR"; exit 1; }
+    pick=$((RANDOM % n)); [ "$n" -gt 1 ] && [ "$pick" -eq "$curidx" ] && pick=$(( (pick + 1 + RANDOM % (n - 1)) % n ))
+    apply "${files[pick]}"; exit 0 ;;
+  --next) [ "$n" -gt 0 ] && apply "${files[(curidx + 1) % n]}"; exit 0 ;;
+  --prev) [ "$n" -gt 0 ] && apply "${files[(curidx - 1 + n) % n]}"; exit 0 ;;
+esac
 
-if [ ${#files[@]} -eq 0 ]; then
-  notify-send "ryu-wall" "Put images in $WALL_DIR"
-  exit 1
-fi
+if [ "$n" -eq 0 ]; then notify-send "ryu-wall" "Put images in $WALL_DIR"; exit 1; fi
 
-# thumbnail path from the file path (pure bash, no process per file); regenerate when the image is newer
+# thumbnail path from the file path (pure bash); regenerate when the image is newer
 thumb_of() {
   local k="${1//[^A-Za-z0-9._-]/_}"
   [ "${#k}" -gt 170 ] && k="${k: -170}"
   THUMB="$THUMBS/$k.png"
 }
-
 IM="$(command -v magick || command -v convert)"
 todo=()
 for f in "${files[@]}"; do
@@ -63,17 +100,33 @@ if [ ${#todo[@]} -gt 0 ] && [ -n "$IM" ]; then
   printf '%s\0' "${todo[@]}" | xargs -0 -n2 -P"$(nproc)" sh -c \
     '"$IM" "$1" -thumbnail 480x300^ -gravity center -extent 480x300 "$2" 2>/dev/null || cp "$1" "$2"' _
 fi
-[ "${1:-}" = "--cache" ] && { echo "thumbnails ready (${#files[@]} images)"; exit 0; }
+[ "${1:-}" = "--cache" ] && { echo "thumbnails ready ($n images)"; exit 0; }
 
 entries() {
-  local f n
-  for f in "${files[@]}"; do
-    n="${f##*/}"; n="${n%.*}"
+  local i f name
+  for i in "${!files[@]}"; do
+    f="${files[i]}"; name="${f##*/}"; name="${name%.*}"
+    [ "$i" -eq "$curidx" ] && name="● $name"
     thumb_of "$f"
-    printf '%s\0icon\x1f%s\n' "$n" "$THUMB"
+    printf '%s\0icon\x1f%s\n' "$name" "$THUMB"
   done
 }
 
-idx=$(entries | rofi -dmenu -i -show-icons -format i -p "wall" -theme ~/.config/rofi/wall.rasi)
+# size the strip to the screen: 5 wallpapers visible, icon fills its cell
+w="$(hyprctl monitors 2>/dev/null | awk '/[0-9]+x[0-9]+@[0-9.]+ at/ {split($1,a,"x"); print a[1]; exit}')"
+w="${w:-1920}"
+icon=$(( (w - 48 - 4 * 14) / 5 - 28 ))
+[ "$icon" -lt 170 ] && icon=170
+[ "$icon" -gt 340 ] && icon=340
+
+if [ "${1:-}" = "--grid" ]; then theme=(-theme "$HOME/.config/rofi/wall.rasi")
+else theme=(-theme "$HOME/.config/rofi/wall-strip.rasi" -theme-str "element-icon { size: ${icon}px; } listview { lines: 5; }"); fi
+
+now="${cur##*/}"; now="${now%.*}"
+idx="$(entries | rofi -dmenu -i -show-icons -format i -p "wallpaper" -selected-row "$curidx" \
+  -mesg "now  ${now:-none}     ·     enter apply     ·     alt+r random     ·     $n images" \
+  -kb-custom-1 "Alt+r" "${theme[@]}")"
+rc=$?
+if [ "$rc" -eq 10 ]; then exec "$0" --random; fi
 [ -z "$idx" ] && exit 0
 apply "${files[$idx]}"

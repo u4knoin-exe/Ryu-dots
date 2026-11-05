@@ -36,7 +36,19 @@ echo "running"
 if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
   for p in waybar dunst hypridle hyprsunset; do pgrep -x "$p" >/dev/null && ok "$p" || fail "$p not running"; done
   if pgrep -x awww-daemon >/dev/null || pgrep -x swaybg >/dev/null; then ok "wallpaper daemon"; else fail "wallpaper daemon not running"; fi
-  pgrep -f ryu-ws-events >/dev/null && ok "workspace listener" || fail "workspace listener not running (needs socat): bar workspace numbers will not update"
+  if pgrep -f ryu-ws-events >/dev/null; then
+    chk="$("$REPO/bin/ryu-ws-events" --check 2>&1)"
+    if [ "$chk" = connected ]; then ok "workspace listener can reach Hyprland's events"; else fail "workspace listener cannot connect: $chk"; fi
+    if pgrep -x socat >/dev/null; then ok "listener is connected (socat running)"; else fail "listener has no socat child: events are not arriving (see \$XDG_RUNTIME_DIR/ryu-ws.log)"; fi
+    st="${XDG_RUNTIME_DIR:-/tmp}/ryu-ws.state"
+    have="$(sed -n 's/^active=//p' "$st" 2>/dev/null)"
+    real="$("$REPO/bin/ryu-ws-events" --active)"
+    if [ -n "$real" ] && [ "$have" = "$real" ]; then ok "bar workspace state matches reality (workspace $real)"; else
+      [ -z "$real" ] && echo "      could not read Hyprland's active workspace. Raw output was:" && hyprctl activeworkspace -j 2>&1 | head -6 | sed 's/^/      /'
+      fail "bar thinks workspace '${have:-?}' but you are on '${real:-?}': switch workspace and re-run, or restart with: pkill -f ryu-ws-events; setsid ryu-ws-events &"; fi
+  else
+    fail "workspace listener not running (needs socat): bar workspace numbers will not update"
+  fi
   pgrep -f hyprpolkitagent >/dev/null && ok "polkit agent" || meh "polkit agent not running (admin prompts will fail)"
 fi
 

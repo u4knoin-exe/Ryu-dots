@@ -2,15 +2,47 @@
 # ryu-ws-events: watches Hyprland and keeps the workspace state for the Waybar buttons up to date.
 # Writes $XDG_RUNTIME_DIR/ryu-ws.state and nudges Waybar (signal 8) only when something changed.
 STATE="${XDG_RUNTIME_DIR:-/tmp}/ryu-ws.state"
+LOG="${XDG_RUNTIME_DIR:-/tmp}/ryu-ws.log"
 SOCK="${XDG_RUNTIME_DIR:-/tmp}/hypr/${HYPRLAND_INSTANCE_SIGNATURE:-}/.socket2.sock"
 
+# ryu-ws-events --check: can we reach Hyprland's event socket right now? (ryu-doctor uses this)
+if [ "${1:-}" = "--check" ]; then
+  [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] || { echo "HYPRLAND_INSTANCE_SIGNATURE is not set (not in a Hyprland session)"; exit 2; }
+  [ -S "$SOCK" ] || { echo "event socket not found: $SOCK"; exit 2; }
+  command -v socat >/dev/null 2>&1 || { echo "socat is not installed"; exit 2; }
+  err="$(timeout 0.5 socat -U - "UNIX-CONNECT:$SOCK" 2>&1 >/dev/null </dev/null)"; rc=$?
+  # 124 = still connected when the timeout hit = good
+  if [ "$rc" -eq 124 ]; then echo "connected"; exit 0; fi
+  echo "socat failed (exit $rc): ${err:-no message}"; exit 2
+fi
+
+# Parsing: JSON first (stable across Hyprland versions), the old plain-text output as a fallback.
+active_ws() {
+  local id
+  id="$(hyprctl activeworkspace -j 2>/dev/null | sed -n 's/^[[:space:]]*"id":[[:space:]]*\(-\?[0-9]\+\).*/\1/p' | head -1)"
+  [ -n "$id" ] || id="$(hyprctl activeworkspace 2>/dev/null | awk 'tolower($1) == "workspace" && tolower($2) == "id" {print $3; exit}')"
+  printf '%s' "$id"
+}
+occupied_ws() {
+  local out
+  out="$(hyprctl workspaces -j 2>/dev/null | awk '
+    /^[ \t]*"id":/      { v = $2; gsub(/[^0-9-]/, "", v); id = v }
+    /^[ \t]*"windows":/ { w = $2; gsub(/[^0-9]/, "", w); if (w + 0 > 0 && id + 0 > 0) printf "%s ", id }')"
+  [ -n "$out" ] || out="$(hyprctl workspaces 2>/dev/null | awk 'tolower($1) == "workspace" && tolower($2) == "id" {id=$3} /windows:/ { if ($2 > 0) printf "%s ", id }')"
+  printf '%s' "$out"
+}
+
+# ryu-ws-events --active: print the active workspace as this script sees it (ryu-doctor uses this)
+if [ "${1:-}" = "--active" ]; then active_ws; echo; exit 0; fi
+
 update() {
-  local active occupied new
-  active="$(hyprctl activeworkspace -j 2>/dev/null | jq -r '.id')"
-  occupied="$(hyprctl workspaces -j 2>/dev/null | jq -r '[.[] | select(.windows > 0) | .id] | join(" ")')"
+  local active occupied new cur=""
+  active="$(active_ws)"
+  occupied="$(occupied_ws)"
   new="active=${active:-1}
-occupied=${occupied} "
-  if [ "$new" != "$(cat "$STATE" 2>/dev/null)" ]; then
+occupied=${occupied}"
+  [ -f "$STATE" ] && cur="$(<"$STATE")"
+  if [ "$new" != "$cur" ]; then
     printf '%s\n' "$new" > "$STATE"
     pkill -RTMIN+8 -x waybar 2>/dev/null
   fi
@@ -18,11 +50,15 @@ occupied=${occupied} "
 
 update
 command -v socat >/dev/null 2>&1 || { echo "ryu-ws-events: install socat" >&2; exit 1; }
+: > "$LOG"
 while true; do
-  socat -U - "UNIX-CONNECT:$SOCK" 2>/dev/null | while read -r line; do
+  socat -U - "UNIX-CONNECT:$SOCK" 2>>"$LOG" | while read -r line; do
     case "$line" in
-      workspace*|createworkspace*|destroyworkspace*|openwindow*|closewindow*|movewindow*|moveworkspace*|focusedmon*) update ;;
+      workspace*|createworkspace*|destroyworkspace*|openwindow*|closewindow*|movewindow*|moveworkspace*|focusedmon*)
+        # one workspace switch fires several events at once: swallow the rest of the burst, then update once
+        while read -r -t 0.03 _; do :; done
+        update ;;
     esac
   done
-  sleep 1
+  sleep 1   # reconnect if the socket dropped
 done

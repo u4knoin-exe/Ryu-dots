@@ -10,6 +10,8 @@ hl.bind(mod .. " + Space",  hl.dsp.exec_cmd(menu)) -- @ launcher
 hl.bind(mod .. " + E",      hl.dsp.exec_cmd(fileManager)) -- @ file manager
 hl.bind(mod .. " + W",      hl.dsp.exec_cmd("~/.local/bin/ryu-wall")) -- @ wallpaper picker
 hl.bind(mod .. " + CTRL + W", hl.dsp.exec_cmd("~/.local/bin/ryu-wall --random")) -- @ random wallpaper
+hl.bind(mod .. " + bracketright", hl.dsp.exec_cmd("~/.local/bin/ryu-wall --next")) -- @ next wallpaper
+hl.bind(mod .. " + bracketleft", hl.dsp.exec_cmd("~/.local/bin/ryu-wall --prev")) -- @ previous wallpaper
 hl.bind(mod .. " + SHIFT + W", hl.dsp.exec_cmd("~/.local/bin/wifi-menu")) -- @ wifi menu
 hl.bind(mod .. " + V",      hl.dsp.exec_cmd("cliphist list | rofi -dmenu | cliphist decode | wl-copy")) -- @ clipboard history
 hl.bind(mod .. " + L",      hl.dsp.exec_cmd("hyprlock")) -- @ lock

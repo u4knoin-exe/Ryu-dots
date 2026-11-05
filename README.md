@@ -52,7 +52,7 @@ A Hyprland rice written in Lua, themed from one palette file, restorable on any 
 | **Notifications** | Dunst |
 | **Prompt** | Starship |
 | **Night light** | hyprsunset, warm from 19:00 to 06:30 |
-| **Wallpapers** | `ryu-wall`: Rofi thumbnail grid, fade transitions, restores on login |
+| **Wallpapers** | `ryu-wall`: film-strip picker with live thumbnails, random transitions, next / prev, auto-change timer, restores on login |
 | **Themes** | `ryu-theme`: mono, amoled, light (add your own in `theme/palettes/`), switch live |
 | **Apps** | GTK3/4, Qt6, btop, fastfetch, zathura, cava, lazygit and Spotify (Spicetify theme `Ryu`) follow the palette too |
 | **OSD** | square volume / brightness / mic popup (via Dunst) |
@@ -113,6 +113,7 @@ The installer backs up your old configs (`~/ryu-backup-*.tar.gz`), moves old fol
 | `Super + Return` | Terminal |
 | `Super + Space` | Launcher |
 | `Super + W` | Wallpaper picker (`+ Ctrl` for random) |
+| `Super + [` / `Super + ]` | Previous / next wallpaper |
 | `Super + Shift + W` | Wi-Fi menu |
 | `Super + N` | Night light toggle |
 | `Super + V` | Clipboard history |
@@ -148,6 +149,15 @@ The installer backs up your old configs (`~/ryu-backup-*.tar.gz`), moves old fol
 | `Super + Shift + M` | Exit Hyprland |
 
 </details>
+
+## Wallpapers
+
+```sh
+ryu-wall                 # film strip, current one preselected; Enter applies, Alt+R picks random
+ryu-wall --grid          # grid layout instead
+ryu-wall --next          # or --prev, --random
+ryu-wall --auto 20       # change every 20 minutes (remembered); ryu-wall --auto off to stop
+```
 
 ## Themes
 
@@ -221,6 +231,11 @@ Hyprland itself is already light; the wins here are in everything around it.
 | Wallpaper picker | thumbnails cached and rebuilt in parallel only when an image changes; no process spawned per image |
 | Bar | Waybar wakes less often (network 10 s, battery 60 s) |
 | Installer | two bulk package queries instead of one per package |
+| Re-render | `apply.sh` spawns no process per file, writes atomically, and only calls `gsettings` when the theme changed (about 3x faster on re-runs) |
+| Bar buttons | workspace buttons use shell builtins only (about 3x cheaper) and one workspace switch triggers one state refresh |
+| Control center | probes network, bluetooth, audio and notifications in parallel; opens after the slowest, not the sum |
+| Launcher | Rofi loads only the modes you use and a fixed icon theme |
+| Wallpapers | thumbnails are pre-built in the background after login, so the first picker open is instant |
 | Battery | `Super + Shift + P` toggles performance mode: no blur, shadows or animations |
 
 Measure it yourself:

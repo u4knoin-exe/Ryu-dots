@@ -20,4 +20,6 @@ setsid dunst >/dev/null 2>&1 &
   setsid hyprsunset >/dev/null 2>&1 &
   setsid wl-paste --watch cliphist store >/dev/null 2>&1 &
 ) &
+# build wallpaper thumbnails at the lowest priority once the desktop is up, so the first picker open is instant
+( sleep 8; nice -n 19 "$BIN/ryu-wall" --cache >/dev/null 2>&1 ) &
 exit 0
