@@ -1,6 +1,6 @@
 -- Keybinds. Each bind ends with ` -- @ description`: ryu-keys (Super + /) builds its cheat sheet from these.
 local mod         = "SUPER"
-local terminal    = "kitty --single-instance"   -- one kitty process: new windows open instantly, less RAM
+local terminal    = 'kitty --single-instance --directory "$HOME"'   -- one kitty process (instant windows, less RAM), always opening in your home folder
 local fileManager = "thunar"
 local menu        = "rofi -show drun"
 

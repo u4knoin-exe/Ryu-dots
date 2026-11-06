@@ -227,7 +227,7 @@ Hyprland itself is already light; the wins here are in everything around it.
 |---|---|
 | Login | `ryu-session` starts wallpaper, bar and notifications first and defers polkit, idle, night light and clipboard by 2 s |
 | Terminal | `Super + Return` uses one shared kitty process: new windows open instantly and share memory; lower input latency settings |
-| Shell | starship's init is cached; fastfetch runs once per login, not in every terminal (`RYU_FETCH=always` to restore) |
+| Shell | starship's init is cached; nothing heavy runs when a terminal opens (type `ff` for fastfetch) |
 | Wallpaper picker | thumbnails cached and rebuilt in parallel only when an image changes; no process spawned per image |
 | Bar | Waybar wakes less often (network 10 s, battery 60 s) |
 | Installer | two bulk package queries instead of one per package |

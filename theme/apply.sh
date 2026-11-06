@@ -19,6 +19,12 @@ for src in "$PALETTE" "$REPO/theme/defaults.env"; do
     printf 's|{{%s}}|%s|g\n' "$k" "$v" >> "$SEDFILE"
   done < "$src"
 done
+# decimal "r;g;b" versions of the colors, e.g. {{accent_rgb}} -> 212;212;212 (pure bash, no processes)
+for k in bg surface overlay fg muted accent accent2 accent_dim red green yellow blue cyan; do
+  h="${P[$k]-}"
+  [[ "$h" =~ ^[0-9a-fA-F]{6}$ ]] || continue
+  printf 's|{{%s_rgb}}|%d;%d;%d|g\n' "$k" "0x${h:0:2}" "0x${h:2:2}" "0x${h:4:2}" >> "$SEDFILE"
+done
 printf 's|{{home}}|%s|g\n' "$HOME" >> "$SEDFILE"
 
 declare -A made

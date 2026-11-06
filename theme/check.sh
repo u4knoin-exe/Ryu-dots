@@ -6,7 +6,8 @@ bad=0
 keys="$(sed -n 's/^\([a-z_0-9]*\)=.*/\1/p' "$REPO/theme/palette.env" "$REPO/theme/defaults.env") home"
 while IFS= read -r -d '' f; do
   for k in $(grep -o '{{[a-z_0-9]*}}' "$f" | tr -d '{}' | sort -u); do
-    grep -qx "$k" <<<"$(tr ' ' '\n' <<<"$keys")" || { echo "unknown key {{$k}} in ${f#"$REPO"/}"; bad=1; }
+    base="${k%_rgb}"
+    grep -qx "$k" <<<"$(tr ' ' '\n' <<<"$keys")" || { [ "$base" != "$k" ] && grep -qx "$base" <<<"$(tr ' ' '\n' <<<"$keys")"; } || { echo "unknown key {{$k}} in ${f#"$REPO"/}"; bad=1; }
   done
 done < <(find "$REPO/config" "$REPO/theme/sddm" -name '*.tpl' -print0)
 for p in "$REPO"/theme/palettes/*.env; do

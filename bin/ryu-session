@@ -2,6 +2,7 @@
 # ryu-session: started once by Hyprland. Wallpaper and bar first, extras 2 seconds later,
 # so the desktop appears sooner and nothing competes for CPU during login.
 BIN="$HOME/.local/bin"
+cd "$HOME" || exit 1   # everything started from here begins in your home folder, not wherever Hyprland was launched
 
 if command -v awww-daemon >/dev/null 2>&1; then
   setsid awww-daemon >/dev/null 2>&1 &

@@ -6,7 +6,7 @@ case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$P
 alias ls='ls --color=auto'
 alias ll='ls -lah'
 alias grep='grep --color=auto'
-alias ff='fastfetch'
+alias ff='fastfetch'   # run it when you want it; it no longer starts with every terminal
 PS1='[\u@\h \W]\$ '
 
 # starship: cache its init script instead of spawning starship on every shell
@@ -18,11 +18,4 @@ if command -v starship >/dev/null 2>&1; then
   # shellcheck disable=SC1090
   source "$_c"
   unset _c
-fi
-
-# fastfetch once per login session (not in every terminal). RYU_FETCH=always to restore the old behaviour.
-if command -v fastfetch >/dev/null 2>&1 && [ -n "${WAYLAND_DISPLAY:-}" ]; then
-  _s="${XDG_RUNTIME_DIR:-/tmp}/ryu-fetched"
-  if [ "${RYU_FETCH:-}" = always ] || [ ! -e "$_s" ]; then : > "$_s"; fastfetch; fi
-  unset _s
 fi
